@@ -1,5 +1,9 @@
+import { spacing } from "./sketch";
+
 class Cell {
-  constructor(x, y) {
+  constructor(p, x, y) {
+    this.p = p;
+
     this.x = x;
     this.y = y;
     this.color = 255;
@@ -13,7 +17,7 @@ class Cell {
 
   setChecked(val) {
     this.checked = val;
-    if (val == true) {
+    if (val === true) {
       this.color = 0;
     } else {
       this.color = 255;
@@ -29,36 +33,37 @@ class Cell {
   }
 
   show() {
-    fill(this.color);
-    square(this.x, this.y, spacing);
-    strokeWeight(1);
-    stroke(0);
+    // eslint-disable-next-line no-undef
+    this.p.fill(this.color);
+    this.p.square(this.x, this.y, spacing);
+    this.p.strokeWeight(1);
+    this.p.stroke(0);
     if (this.getMarked()) {
-      stroke(255, 0, 0);
-      line(
+      this.p.stroke(255, 0, 0);
+      this.p.line(
         this.x + 10,
         this.y + 10,
         this.x + spacing - 10,
         this.y + spacing - 10
       );
-      line(
+      this.p.line(
         this.x + spacing - 10,
         this.y + 10,
         this.x + 10,
         this.y + spacing - 10
       );
-      stroke(0);
+      this.p.stroke(0);
     }
   }
 
   isClicked() {
     if (
-      mouseX >= this.x &&
-      mouseX <= this.x + spacing &&
-      mouseY >= this.y &&
-      mouseY <= this.y + spacing
+      this.p.mouseX >= this.x &&
+      this.p.mouseX <= this.x + spacing &&
+      this.p.mouseY >= this.y &&
+      this.p.mouseY <= this.y + spacing
     ) {
-      if (mouseIsPressed) {
+      if (this.p.mouseIsPressed) {
         return true;
       }
     }

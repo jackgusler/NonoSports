@@ -1,5 +1,5 @@
 import React from 'react';
-import Nono from './p5/Sketch.js';
+import Nono from './p5/sketch';
 
 function App() {
   return (

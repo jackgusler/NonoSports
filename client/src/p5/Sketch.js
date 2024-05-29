@@ -1,63 +1,65 @@
-import React from 'react';
-import Sketch from 'react-p5';
+import React, { useEffect, useRef } from "react";
+import p5 from "p5";
+import Converter from "./Converter";
+import Grid from "./Grid";
+import State from "./State";
 
-import Grid from './Grid';
-import State from './State';
-import Converter from './Converter';
+let grid;
+export let spacing = 100;
+export let gap = 200;
+export let state = "checking";
+export let converter;
+let img;
 
-class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.grid = null;
-    this.spacing = 100;
-    this.gap = 200;
-    this.state = { state: "checking" };
-    this.converter = null;
-    this.img = null;
-  }
+const Sketch = () => {
+  const sketchRef = useRef();
 
-  preload = (p5) => {
-    let imagePath = `images/nyr.png`;
-    this.img = p5.loadImage(imagePath);
-  }
+  const sketch = (p) => {
+    p.preload = () => {
+      img = p.loadImage("https://picsum.photos/200");
+    };
 
-  setup = (p5, canvasParentRef) => {
-    p5.createCanvas(800, 800).parent(canvasParentRef);
-    this.img.resize(p5.width / 2, p5.height / 2);
-    this.converter = new Converter(this.img);
-    this.converter.convert();
-    this.grid = new Grid();
-  }
+    p.setup = () => {
+      p.createCanvas(800, 800);
+      converter = new Converter(p, img);
+      converter.convert();
+      converter.calcNums();
+      grid = new Grid(p);
+    };
 
-  draw = (p5) => {
-    p5.background(255);
-    this.stateButtons(p5);
-    this.grid.show();
-    this.grid.showNums();
-    this.grid.monitor();
-    this.grid.checkWin();
-  }
+    p.draw = () => {
+      p.background(255);
+      stateButtons(p);
+      grid.show();
+      grid.showNums();
+      grid.monitor();
+      grid.checkWin();
+    };
 
-  stateButtons = (p5) => {
-    let marks = new State(p5.width - this.spacing, 0, "marking");
-    if (marks.isClicked()) {
-      marks.setState();
-    }
+    const stateButtons = (p) => {
+      const marks = new State(p, p.width - spacing, 0, "marking");
+      if (marks.isClicked()) {
+        state = marks.value;
+      }
 
-    let unchecks = new State(p5.width - this.spacing * 2, 0, "unchecking");
-    if (unchecks.isClicked()) {
-      unchecks.setState();
-    }
+      const unchecks = new State(p, p.width - spacing * 2, 0, "unchecking");
+      if (unchecks.isClicked()) {
+        state = unchecks.value;
+      }
 
-    let checking = new State(p5.width - this.spacing * 3, 0, "checking");
-    if (checking.isClicked()) {
-      checking.setState();
-    }
-  }
+      const checking = new State(p, p.width - spacing * 3, 0, "checking");
+      if (checking.isClicked()) {
+        state = checking.value;
+      }
+    };
+  };
 
-  render() {
-    return <Sketch setup={this.setup} draw={this.draw} preload={this.preload} />;
-  }
-}
+  useEffect(() => {
+    new p5(sketch, sketchRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-export default MyComponent;
+  return <div ref={sketchRef}></div>;
+};
+
+export default Sketch;

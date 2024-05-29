@@ -1,9 +1,12 @@
 import Cell from "./Cell";
+import { spacing, gap, converter, state } from "./sketch";
 
 class Grid {
-  constructor() {
-    this.rowCount = Math.floor((width - 2 * gap) / spacing);
-    this.colCount = Math.floor((height - 2 * gap) / spacing);
+  constructor(p) {
+    this.p = p;
+
+    this.rowCount = Math.floor((this.p.width - 2 * gap) / spacing);
+    this.colCount = Math.floor((this.p.height - 2 * gap) / spacing);
     this.rows = [];
     this.cols = [];
     this.cells = [];
@@ -13,7 +16,7 @@ class Grid {
       for (let j = 0; j < this.colCount; j++) {
         let x = gap + i * spacing;
         let y = gap + j * spacing;
-        this.cells.push(new Cell(x, y, spacing));
+        this.cells.push(new Cell(this.p, x, y, spacing));
       }
     }
 
@@ -33,12 +36,15 @@ class Grid {
   }
 
   showNums() {
-    textAlign(CENTER, CENTER);
-    textSize(12);
+    this.p.textAlign(this.p.CENTER, this.p.CENTER);
+    this.p.textSize(12);
 
     // Display row numbers (right to left, starting from outside the grid)
     for (let i = 0; i < this.rowCount; i++) {
       let nums = converter.numRows[i];
+      if (!nums) {
+        nums = [];
+      }
       let filledSequence = this.getFilledSequences(this.rows[i]);
 
       for (let j = 0; j < nums.length; j++) {
@@ -47,8 +53,8 @@ class Grid {
           filledSequence[filledSequence.length - 1 - j] === num
             ? "grey"
             : "black";
-        fill(fillColor);
-        text(
+        this.p.fill(fillColor);
+        this.p.text(
           num, // Reverse the order of nums for right to left
           gap - (j + 1) * 15, // Offset each number horizontally to the left, starting from outside the grid
           gap + i * spacing + spacing / 2 // Centered in the row
@@ -59,6 +65,9 @@ class Grid {
     // Display column numbers (top to bottom, starting from outside the grid)
     for (let i = 0; i < this.colCount; i++) {
       let nums = converter.numCols[i];
+      if (!nums) {
+        nums = [];
+      }
       let filledSequence = this.getFilledSequences(this.cols[i]);
 
       for (let j = 0; j < nums.length; j++) {
@@ -67,8 +76,8 @@ class Grid {
           filledSequence[filledSequence.length - 1 - j] === num
             ? "grey"
             : "black";
-        fill(fillColor);
-        text(
+        this.p.fill(fillColor);
+        this.p.text(
           num, // Reverse the order of nums for top to bottom
           gap + i * spacing + spacing / 2, // Centered in the column
           gap - (j + 1) * 15 // Offset each number vertically upward, starting from outside the grid
@@ -104,18 +113,18 @@ class Grid {
         let row = Math.floor((cell.y - gap) / spacing);
         let col = Math.floor((cell.x - gap) / spacing);
 
-        if (state == "checking") {
+        if (state === "checking") {
           if (!cell.getMarked()) {
             cell.setChecked(true);
             this.rows[row][col] = true;
             this.cols[col][row] = true;
           }
-        } else if (state == "unchecking") {
+        } else if (state === "unchecking") {
           cell.setChecked(false);
           cell.setMarked(false);
           this.rows[row][col] = false;
           this.cols[col][row] = false;
-        } else if (state == "marking") {
+        } else if (state === "marking") {
           if (!cell.getChecked()) {
             cell.setMarked(true);
           }
@@ -130,6 +139,9 @@ class Grid {
 
     // Check if rows match
     for (let i = 0; i < this.rowCount; i++) {
+      if (!converter.rows[i]) {
+        continue;
+      }
       for (let j = 0; j < this.colCount; j++) {
         if (this.rows[i][j] !== converter.rows[i].includes(j)) {
           rowsMatch = false;
@@ -140,6 +152,9 @@ class Grid {
 
     // Check if cols match
     for (let i = 0; i < this.colCount; i++) {
+      if (!converter.cols[i]) {
+        continue;
+      }
       for (let j = 0; j < this.rowCount; j++) {
         if (this.cols[i][j] !== converter.cols[i].includes(j)) {
           colsMatch = false;

@@ -1,5 +1,9 @@
+import { spacing } from "./sketch";
+
 class Converter {
-  constructor(img) {
+  constructor(p, img) {
+    this.p = p;
+
     this.img = img;
     this.rows = [];
     this.cols = [];
@@ -29,8 +33,6 @@ class Converter {
         }
       }
     }
-
-    this.calcNums();
   }
 
   isNotWhite(startX, startY) {
