@@ -5,7 +5,7 @@ import Grid from "./Grid";
 import State from "./State";
 
 let grid;
-export let spacing = 100;
+export let spacing = 50;
 export let gap = 200;
 export let state = "checking";
 export let converter;
@@ -21,6 +21,7 @@ const Sketch = () => {
 
     p.setup = () => {
       p.createCanvas(800, 800);
+      img.resize(p.width / 2, p.height / 2);
       converter = new Converter(p, img);
       converter.convert();
       converter.calcNums();
@@ -55,8 +56,9 @@ const Sketch = () => {
   };
 
   useEffect(() => {
-    new p5(sketch, sketchRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const myP5 = new p5(sketch, sketchRef.current);
+
+    return () => myP5.remove();
   }, []);
 
   return <div ref={sketchRef}></div>;

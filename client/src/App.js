@@ -1,3 +1,4 @@
+import './index.css';
 import React from 'react';
 import Nono from './p5/sketch';
 

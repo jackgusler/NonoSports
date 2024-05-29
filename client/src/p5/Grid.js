@@ -42,8 +42,8 @@ class Grid {
     // Display row numbers (right to left, starting from outside the grid)
     for (let i = 0; i < this.rowCount; i++) {
       let nums = converter.numRows[i];
-      if (!nums) {
-        nums = [];
+      if (!nums || nums.length === 0) {
+        nums = [0];
       }
       let filledSequence = this.getFilledSequences(this.rows[i]);
 
@@ -65,9 +65,10 @@ class Grid {
     // Display column numbers (top to bottom, starting from outside the grid)
     for (let i = 0; i < this.colCount; i++) {
       let nums = converter.numCols[i];
-      if (!nums) {
-        nums = [];
+      if (!nums || nums.length === 0) {
+        nums = [0];
       }
+      // console.log(nums);
       let filledSequence = this.getFilledSequences(this.cols[i]);
 
       for (let j = 0; j < nums.length; j++) {
@@ -163,11 +164,11 @@ class Grid {
       }
     }
 
-    if (rowsMatch && colsMatch) {
-      console.log("You win!");
-    } else {
-      console.log("Keep trying!");
-    }
+    // if (rowsMatch && colsMatch) {
+    //   console.log("You win!");
+    // } else {
+    //   console.log("Keep trying!");
+    // }
   }
 }
 
