@@ -4,5 +4,12 @@ module.exports = {
   theme: {
     extend: {},
   },
+  variants: {
+    extend: {
+      backgroundColor: ['active'],
+      borderColor: ['active'],
+      scale: ['active'],
+    },
+  },
   plugins: [],
 };
