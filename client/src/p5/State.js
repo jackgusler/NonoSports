@@ -1,5 +1,5 @@
 import Cell from "./Cell";
-import { state } from "./sketch";
+import { state, spacing } from "./sketch";
 
 class State extends Cell {
   constructor(p, x, y, value) {
@@ -19,10 +19,24 @@ class State extends Cell {
       this.setMarked(true);
     }
     if (this.value === state) {
-        this.p.strokeWeight(4);
-        this.p.stroke(0, 255, 0);
+      this.p.strokeWeight(4);
+      this.p.stroke(0, 255, 0);
     }
     this.show();
+  }
+
+  isClicked() {
+    if (
+      this.p.mouseX >= this.x &&
+      this.p.mouseX <= this.x + spacing &&
+      this.p.mouseY >= this.y &&
+      this.p.mouseY <= this.y + spacing
+    ) {
+      if (this.p.mouseIsPressed) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 

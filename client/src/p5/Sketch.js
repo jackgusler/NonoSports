@@ -11,12 +11,12 @@ export let state = "checking";
 export let converter;
 let img;
 
-const Sketch = () => {
+export const Sketch = ({ setImage }) => {
   const sketchRef = useRef();
 
   const sketch = (p) => {
     p.preload = () => {
-      img = p.loadImage("https://picsum.photos/200");
+      img = p.loadImage("https://picsum.photos/400", setImage);
     };
 
     p.setup = () => {
@@ -52,6 +52,25 @@ const Sketch = () => {
       if (checking.isClicked()) {
         state = checking.value;
       }
+
+      const reset = new State(p, p.width - spacing * 6, 0, "reset");
+      if (reset.isClicked()) {
+        resetSketch(p);
+      }
+    };
+
+    const resetSketch = async (p) => {
+      const response = await fetch("https://picsum.photos/400");
+      const blob = await response.blob();
+      p.loadImage(URL.createObjectURL(blob), (newImg) => {
+        img = newImg;
+        img.resize(p.width / 2, p.height / 2);
+        converter = new Converter(p, img);
+        converter.convert();
+        converter.calcNums();
+        grid = new Grid(p);
+        setImage({ canvas: img.drawingContext.canvas });
+      });
     };
   };
 
