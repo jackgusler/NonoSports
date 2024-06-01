@@ -6,9 +6,9 @@ const Button = ({ color, children, onClick }) => {
     "font-bold py-2 px-4 border-b-4 rounded transform transition-all duration-75";
   const colorStyle = {
     black:
-      "bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600 active:translate-y-1 active:border-gray-800",
+      "bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600 active:translate-y-1 active:border-gray-900",
     white:
-      "bg-gray-100 hover:bg-gray-200 text-gray-900 border-gray-200 hover:border-gray-300 active:translate-y-1 active:border-gray-200",
+      "bg-gray-100 hover:bg-gray-200 text-gray-900 border-gray-200 hover:border-gray-300 active:translate-y-1 active:border-white",
     grey: "bg-gray-500 hover:bg-gray-400 text-white border-gray-400 hover:border-gray-300 active:translate-y-1 active:border-gray-600",
     red: "bg-red-500 hover:bg-red-400 text-white border-red-400 hover:border-red-300 active:translate-y-1 active:border-red-600",
     green:
@@ -17,8 +17,8 @@ const Button = ({ color, children, onClick }) => {
   };
 
   const tailwindToHex = {
-    "gray-800": "#1f2937", // This is the hex color code for Tailwind's gray-900
-    "gray-100": "#e5e7eb", // This is the hex color code for Tailwind's gray-200
+    "gray-800": "#111827", // This is the hex color code for Tailwind's gray-900
+    "gray-100": "#ffffff", // This is the hex color code for Tailwind's gray-200
     "gray-500": "#4b5563", // This is the hex color code for Tailwind's gray-600
     "red-500": "#dc2626", // This is the hex color code for Tailwind's red-600
     "green-500": "#16a34a", // This is the hex color code for Tailwind's green-600
@@ -31,10 +31,13 @@ const Button = ({ color, children, onClick }) => {
   return (
     <div
       style={{
-        display: "inline-block",
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
         padding: "5px",
-        background: `linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, ${backgroundColor} 50%)`, // Replace white with semi-transparent white
+        background: backgroundColor,
         borderRadius: "5px",
+        height: "30px",
       }}
     >
       <button className={`${baseStyle} ${colorStyle[color]}`} onClick={onClick}>
