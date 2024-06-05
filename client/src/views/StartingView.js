@@ -8,6 +8,12 @@ function StartingView({ setCategory, setDifficulty, setGameStarted }) {
       <div className="container mx-auto flex justify-center space-x-4">
         <ButtonGroup
           isActive={true}
+          multiActive={{
+            MLB: true,
+            NBA: true,
+            NFL: true,
+            NHL: true,
+          }}
           buttons={[
             {
               id: "MLB",
@@ -47,6 +53,11 @@ function StartingView({ setCategory, setDifficulty, setGameStarted }) {
       <div className="container mx-auto flex justify-center space-x-4">
         <ButtonGroup
           isActive={true}
+          multiActive={{
+            easy: false,
+            medium: false,
+            hard: false,
+          }}
           buttons={[
             {
               id: "easy",

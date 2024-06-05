@@ -1,8 +1,34 @@
 import React, { useState } from "react";
 import Button from "./Button";
 
-function ButtonGroup({ isActive, buttons }) {
-  const [activeButton, setActiveButton] = useState(buttons.length > 1 ? buttons[0].id : null);
+function ButtonGroup({ isActive, multiActive = {}, buttons }) {
+  const [activeButtons, setActiveButtons] = useState(
+    isActive && buttons.length > 0 ? [buttons[0].id] : []
+  );
+
+  const handleClick = (button) => {
+    if (activeButtons.includes(button.id)) {
+      // Prevent deactivation if this is the last active button and isActive is true
+      if (isActive && activeButtons.length === 1) {
+        return;
+      }
+      setActiveButtons(activeButtons.filter((id) => id !== button.id));
+    } else {
+      if (multiActive[button.id]) {
+        setActiveButtons((prevActiveButtons) => {
+          const filteredActiveButtons = prevActiveButtons.filter(
+            (id) => multiActive[id]
+          );
+          return [...filteredActiveButtons, button.id];
+        });
+      } else {
+        setActiveButtons([button.id]);
+      }
+    }
+
+    button.onClick(activeButtons);
+  };
+
   return (
     <div className="container mx-auto flex justify-center">
       <div
@@ -13,11 +39,9 @@ function ButtonGroup({ isActive, buttons }) {
           <div key={index} className="mt-4">
             <Button
               color={button.color}
-              onClick={() => {
-                button.onClick();
-                setActiveButton(button.id);
-              }}
-              active={isActive && activeButton === button.id}
+              onClick={() => handleClick(button)}
+              active={isActive && activeButtons.includes(button.id)}
+              disabled={button.disabled}
             >
               {button.label}
             </Button>

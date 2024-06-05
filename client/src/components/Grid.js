@@ -1,5 +1,5 @@
 // Grid.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
 
@@ -11,46 +11,64 @@ const difficultyMap = {
 
 const Grid = ({ difficulty }) => {
   const gridSize = difficultyMap[difficulty] || 5;
-  const [isDragging, setIsDragging] = useState(false);
-  const [gridState, setGridState] = useState("checking");
+  const [actionState, setActionState] = useState("checking");
   const [resetKey, setResetKey] = useState(0);
 
-  const handleMouseDown = () => {
-    setIsDragging(true);
-  };
+  const [mouseDown, setMouseDown] = useState(false);
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+  useEffect(() => {
+    const handleMouseUp = () => setMouseDown(false);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, []);
 
-  let grid = Array(gridSize ** 2)
+  let grid = Array(gridSize)
     .fill()
-    .map((_, i) => (
-      <GridButton key={`${resetKey}-${i}`} isDragging={isDragging} gridState={gridState} />
-    ));
+    .map((_, row) =>
+      Array(gridSize)
+        .fill()
+        .map((_, col) => (
+          <GridButton
+            key={`${resetKey}-${row}-${col}`}
+            id={`${row}-${col}`}
+            actionState={actionState}
+            mouseDown={mouseDown}
+          />
+        ))
+    );
 
   const resetGrid = () => {
-    setResetKey(prevKey => prevKey + 1);
+    setResetKey((prevKey) => prevKey + 1);
   };
 
   return (
     <div className="flex flex-col items-center">
       <ButtonGroup
         isActive={true}
+        multiActive={{
+          checking: false,
+          unchecking: true,
+          marking: false,
+          unmarking: true,
+        }}
         buttons={[
           {
             id: "checking",
             color: "blue",
             onClick: () => {
-              setGridState("checking");
+              setActionState("checking");
             },
             label: <i className="fa-solid fa-pen-to-square"></i>,
           },
           {
             id: "unchecking",
             color: "blue",
-            onClick: () => {
-              setGridState("unchecking");
+            onClick: (activeButtons) => {
+              if (activeButtons.includes("unmarking")) {
+                setActionState("uncheckingAndUnmarking");
+              } else {
+                setActionState("unchecking");
+              }
             },
             label: <i className="fa-regular fa-pen-to-square"></i>,
           },
@@ -58,29 +76,42 @@ const Grid = ({ difficulty }) => {
             id: "marking",
             color: "red",
             onClick: () => {
-              setGridState("marking");
+              setActionState("marking");
             },
             label: <i className="fas fa-flag"></i>,
           },
           {
             id: "unmarking",
             color: "red",
-            onClick: () => {
-              setGridState("unmarking");
+            onClick: (activeButtons) => {
+              if (activeButtons.includes("unchecking")) {
+                setActionState("uncheckingAndUnmarking");
+              } else {
+                setActionState("unmarking");
+              }
             },
             label: <i className="fa-regular fa-flag"></i>,
           },
         ]}
       />
       <div
+        onMouseDown={() => setMouseDown(true)}
+        onMouseUp={() => console.log("mouseup")}
         className={`grid grid-cols-${gridSize} my-4`}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
       >
-        {grid}
+        {grid.map((row, i) => (
+          <div key={i} className="grid-row">
+            {row.map((cell) => cell)}
+          </div>
+        ))}
       </div>
       <ButtonGroup
         isActive={false}
+        multiActive={{
+          reset: false,
+          undo: false,
+          redo: false,
+        }}
         buttons={[
           {
             id: "reset",
@@ -91,12 +122,21 @@ const Grid = ({ difficulty }) => {
             label: <i className="fa-solid fa-rotate-left"></i>,
           },
           {
+            id: "undo",
+            color: "blue",
+            onClick: () => {
+              // undoMove();
+            },
+            label: <i className="fa-solid fa-left-long"></i>,
+          },
+          {
             id: "redo",
             color: "blue",
             onClick: () => {
               // redoMove();
             },
-            label: <i className="fa-solid fa-left-long"></i>,
+            disabled: true,
+            label: <i className="fa-solid fa-right-long"></i>,
           },
         ]}
       />
