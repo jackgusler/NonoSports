@@ -12,6 +12,7 @@ const difficultyMap = {
 const Grid = ({ difficulty }) => {
   const gridSize = difficultyMap[difficulty] || 5;
   const [actionState, setActionState] = useState("checking");
+  const [buttonState, setButtonState] = useState(null);
   const [resetKey, setResetKey] = useState(0);
 
   const [mouseDown, setMouseDown] = useState(false);
@@ -22,24 +23,78 @@ const Grid = ({ difficulty }) => {
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, []);
 
-  let grid = Array(gridSize)
-    .fill()
-    .map((_, row) =>
-      Array(gridSize)
-        .fill()
-        .map((_, col) => (
-          <GridButton
-            key={`${resetKey}-${row}-${col}`}
-            id={`${row}-${col}`}
-            actionState={actionState}
-            mouseDown={mouseDown}
-          />
-        ))
-    );
+  // Define grid as a state variable
+  const [grid, setGrid] = useState(
+    Array(gridSize)
+      .fill()
+      .map(
+        (_, row) =>
+          Array(gridSize)
+            .fill()
+            .map((_, col) => ({ row, col, state: null })) // Store the row and col instead of the GridButton component
+      )
+  );
 
   const resetGrid = () => {
-    setResetKey((prevKey) => prevKey + 1);
+    // clear the console
+    console.clear();
+    setGrid(
+      Array(gridSize)
+        .fill()
+        .map(
+          (_, row) =>
+            Array(gridSize)
+              .fill()
+              .map((_, col) => ({ row, col, state: null })) // Reset the state of each button to 'default'
+        )
+    );
+    setResetKey(prevKey => prevKey + 1); // increment the resetKey state
   };
+
+  const updateButtonState = (rowIndex, colIndex, newState) => {
+    setGrid((prevGrid) => {
+      // Create a copy of the previous grid
+      const newGrid = prevGrid.map((row) => [...row]);
+
+      // Update the state of the specific button
+      newGrid[rowIndex][colIndex] = {
+        ...newGrid[rowIndex][colIndex],
+        ...newState,
+      };
+
+      // Return the new grid
+      return newGrid;
+    });
+  };
+
+  const handleGridButtonClick = () => {
+    switch (actionState) {
+      case "checking":
+        if (buttonState === null) setButtonState("checked");
+        break;
+      case "unchecking":
+        if (buttonState === "checked") setButtonState(null);
+        break;
+      case "marking":
+        if (buttonState === null) setButtonState("marked");
+        break;
+      case "unmarking":
+        if (buttonState === "marked") setButtonState(null);
+        break;
+      case "uncheckingAndUnmarking":
+        if (buttonState === "checked" || buttonState === "marked")
+          setButtonState(null);
+        break;
+      default:
+        break;
+    }
+    return buttonState;
+  }
+
+  useEffect(() => {
+    console.clear();
+    console.table(grid);
+  }, [grid]);
 
   return (
     <div className="flex flex-col items-center">
@@ -95,13 +150,22 @@ const Grid = ({ difficulty }) => {
         ]}
       />
       <div
-        onMouseDown={() => setMouseDown(true)}
-        onMouseUp={() => console.log("mouseup")}
+        // onMouseDown={() => setMouseDown(true)}
+        // onMouseUp={() => console.log("mouseup")}
         className={`grid grid-cols-${gridSize} my-4`}
       >
-        {grid.map((row, i) => (
-          <div key={i} className="grid-row">
-            {row.map((cell) => cell)}
+        {grid.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid-row">
+            {row.map(({ row, col }, colIndex) => (
+              <GridButton
+                key={`${resetKey}-${row}-${col}`}
+                
+                onClick={() =>
+                  updateButtonState(rowIndex, colIndex, { state: handleGridButtonClick() })
+                }
+                buttonState={grid[rowIndex][colIndex].state}
+              />
+            ))}
           </div>
         ))}
       </div>

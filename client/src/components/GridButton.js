@@ -1,36 +1,7 @@
 // GridButton.js
 import React, { useState, useEffect } from "react";
 
-const GridButton = ({ actionState, resetKey, mouseDown}) => {
-  const [buttonState, setButtonState] = useState(null);
-
-  useEffect(() => {
-    setButtonState(null);
-  }, [resetKey]);
-
-  const handleMouseClick = () => {
-    switch (actionState) {
-      case "checking":
-        if (buttonState === null) setButtonState("checked");
-        break;
-      case "unchecking":
-        if (buttonState === "checked") setButtonState(null);
-        break;
-      case "marking":
-        if (buttonState === null) setButtonState("marked");
-        break;
-      case "unmarking":
-        if (buttonState === "marked") setButtonState(null);
-        break;
-      case "uncheckingAndUnmarking":
-        if (buttonState === "checked" || buttonState === "marked")
-          setButtonState(null);
-        break;
-      default:
-        break;
-    }
-  };
-
+const GridButton = ({ onClick, buttonState }) => {
   const getButtonColor = () => {
     switch (buttonState) {
       case "checked":
@@ -45,13 +16,11 @@ const GridButton = ({ actionState, resetKey, mouseDown}) => {
   return (
     <button
       onMouseDown={() => {
-        handleMouseClick();
+        onClick();
       }}
-      onMouseEnter={() => {
-        if (mouseDown) {
-          handleMouseClick();
-        }
-      }}
+      // onMouseEnter={() => {
+      //   handleMouseClick();
+      // }}
       style={{
         backgroundColor: getButtonColor(),
         width: "50px",
@@ -63,7 +32,10 @@ const GridButton = ({ actionState, resetKey, mouseDown}) => {
       }}
     >
       {buttonState === "marked" && (
-        <i className="fas fa-flag fa-2x" style={{ color: "#446BA2", width: "24px", height: "24px" }}></i>
+        <i
+          className="fas fa-flag fa-2x"
+          style={{ color: "#446BA2", width: "24px", height: "24px" }}
+        ></i>
       )}
     </button>
   );
