@@ -1,40 +1,37 @@
 // GridButton.js
-import React, { useState, useEffect } from "react";
+import React from 'react';
 
-const GridButton = ({ onClick, buttonState }) => {
+const GridButton = ({ onMouseDown, onMouseUp, onMouseOver, buttonState }) => {
   const getButtonColor = () => {
     switch (buttonState) {
-      case "checked":
-        return "#93C5FD";
-      case "marked":
-        return "white";
+      case 'checked':
+        return '#93C5FD';
+      case 'marked':
+        return 'white';
       default:
-        return "white";
+        return 'white';
     }
   };
 
   return (
     <button
-      onMouseDown={() => {
-        onClick();
-      }}
-      // onMouseEnter={() => {
-      //   handleMouseClick();
-      // }}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseOver={onMouseOver}
       style={{
         backgroundColor: getButtonColor(),
-        width: "50px",
-        height: "50px",
-        border: "1px solid #446BA2",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        width: '50px',
+        height: '50px',
+        border: '1px solid #446BA2',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      {buttonState === "marked" && (
+      {buttonState === 'marked' && (
         <i
           className="fas fa-flag fa-2x"
-          style={{ color: "#446BA2", width: "24px", height: "24px" }}
+          style={{ color: '#446BA2', width: '24px', height: '24px' }}
         ></i>
       )}
     </button>

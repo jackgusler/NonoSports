@@ -12,7 +12,6 @@ const difficultyMap = {
 const Grid = ({ difficulty }) => {
   const gridSize = difficultyMap[difficulty] || 5;
   const [actionState, setActionState] = useState("checking");
-  const [buttonState, setButtonState] = useState(null);
   const [resetKey, setResetKey] = useState(0);
 
   const [mouseDown, setMouseDown] = useState(false);
@@ -38,58 +37,44 @@ const Grid = ({ difficulty }) => {
   const resetGrid = () => {
     // clear the console
     console.clear();
-    setGrid(
-      Array(gridSize)
-        .fill()
-        .map(
-          (_, row) =>
-            Array(gridSize)
-              .fill()
-              .map((_, col) => ({ row, col, state: null })) // Reset the state of each button to 'default'
-        )
-    );
-    setResetKey(prevKey => prevKey + 1); // increment the resetKey state
+    const newGrid = Array(gridSize)
+      .fill()
+      .map(
+        (_, row) =>
+          Array(gridSize)
+            .fill()
+            .map((_, col) => ({ row, col, state: null })) // Reset the state of each button to 'default'
+      );
+    setGrid(newGrid);
+    setTempGrid(newGrid);
+    setResetKey((prevKey) => prevKey + 1); // increment the resetKey state
   };
 
-  const updateButtonState = (rowIndex, colIndex, newState) => {
-    setGrid((prevGrid) => {
-      // Create a copy of the previous grid
-      const newGrid = prevGrid.map((row) => [...row]);
-
-      // Update the state of the specific button
-      newGrid[rowIndex][colIndex] = {
-        ...newGrid[rowIndex][colIndex],
-        ...newState,
-      };
-
-      // Return the new grid
-      return newGrid;
-    });
-  };
-
-  const handleGridButtonClick = () => {
+  const handleGridButtonClick = (currentButtonState) => {
     switch (actionState) {
       case "checking":
-        if (buttonState === null) setButtonState("checked");
+        if (currentButtonState === null) return "checked";
         break;
       case "unchecking":
-        if (buttonState === "checked") setButtonState(null);
+        if (currentButtonState === "checked") return null;
         break;
       case "marking":
-        if (buttonState === null) setButtonState("marked");
+        if (currentButtonState === null) return "marked";
         break;
       case "unmarking":
-        if (buttonState === "marked") setButtonState(null);
+        if (currentButtonState === "marked") return null;
         break;
       case "uncheckingAndUnmarking":
-        if (buttonState === "checked" || buttonState === "marked")
-          setButtonState(null);
+        if (currentButtonState === "checked" || currentButtonState === "marked")
+          return null;
         break;
       default:
         break;
     }
-    return buttonState;
-  }
+    return currentButtonState;
+  };
+
+  const [tempGrid, setTempGrid] = useState(grid);
 
   useEffect(() => {
     console.clear();
@@ -159,11 +144,27 @@ const Grid = ({ difficulty }) => {
             {row.map(({ row, col }, colIndex) => (
               <GridButton
                 key={`${resetKey}-${row}-${col}`}
-                
-                onClick={() =>
-                  updateButtonState(rowIndex, colIndex, { state: handleGridButtonClick() })
-                }
-                buttonState={grid[rowIndex][colIndex].state}
+                onMouseDown={() => {
+                  setMouseDown(true);
+                  const newTempGrid = [...grid];
+                  newTempGrid[rowIndex][colIndex].state = handleGridButtonClick(
+                    tempGrid[rowIndex][colIndex].state
+                  );
+                  setTempGrid(newTempGrid);
+                }}
+                onMouseOver={() => {
+                  if (mouseDown) {
+                    const newTempGrid = [...tempGrid];
+                    newTempGrid[rowIndex][colIndex].state =
+                      handleGridButtonClick(tempGrid[rowIndex][colIndex].state);
+                    setTempGrid(newTempGrid);
+                  }
+                }}
+                onMouseUp={() => {
+                  setMouseDown(false);
+                  setGrid(tempGrid);
+                }}
+                buttonState={tempGrid[rowIndex][colIndex].state}
               />
             ))}
           </div>
