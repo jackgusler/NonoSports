@@ -1,4 +1,3 @@
-// Grid.js
 import React, { useState, useEffect } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
@@ -10,44 +9,42 @@ const difficultyMap = {
 };
 
 const Grid = ({ difficulty }) => {
-  const gridSize = difficultyMap[difficulty] || 5;
+  const [gridSize, setGridSize] = useState(difficultyMap[difficulty] || 5);
+  const [modalState, setModalState] = useState(false);
   const [actionState, setActionState] = useState("checking");
   const [resetKey, setResetKey] = useState(0);
-
   const [mouseDown, setMouseDown] = useState(false);
 
-  useEffect(() => {
-    const handleMouseUp = () => setMouseDown(false);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => window.removeEventListener("mouseup", handleMouseUp);
-  }, []);
-
-  // Define grid as a state variable
-  const [grid, setGrid] = useState(
+  const createEmptyGrid = () =>
     Array(gridSize)
       .fill()
-      .map(
-        (_, row) =>
-          Array(gridSize)
-            .fill()
-            .map((_, col) => ({ row, col, state: null })) // Store the row and col instead of the GridButton component
-      )
-  );
+      .map((_, row) =>
+        Array(gridSize)
+          .fill()
+          .map((_, col) => ({ row, col, state: null }))
+      );
+
+  const [grid, setGrid] = useState(createEmptyGrid);
+  const [history, setHistory] = useState([createEmptyGrid()]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setMouseDown(false);
+      if (!gridsAreEqual(grid, history[historyIndex])) {
+        updateGrid(grid);
+      }
+    };
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, [grid, history, historyIndex]);
 
   const resetGrid = () => {
-    // clear the console
-    console.clear();
-    const newGrid = Array(gridSize)
-      .fill()
-      .map(
-        (_, row) =>
-          Array(gridSize)
-            .fill()
-            .map((_, col) => ({ row, col, state: null })) // Reset the state of each button to 'default'
-      );
+    const newGrid = createEmptyGrid();
     setGrid(newGrid);
-    setTempGrid(newGrid);
-    setResetKey((prevKey) => prevKey + 1); // increment the resetKey state
+    setHistory([newGrid]);
+    setHistoryIndex(0);
+    setResetKey((prevKey) => prevKey + 1);
   };
 
   const handleGridButtonClick = (currentButtonState) => {
@@ -74,12 +71,46 @@ const Grid = ({ difficulty }) => {
     return currentButtonState;
   };
 
-  const [tempGrid, setTempGrid] = useState(grid);
+  const gridsAreEqual = (grid1, grid2) => {
+    for (let i = 0; i < grid1.length; i++) {
+      for (let j = 0; j < grid1[i].length; j++) {
+        if (grid1[i][j].state !== grid2[i][j].state) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
-  useEffect(() => {
-    console.clear();
-    console.table(grid);
-  }, [grid]);
+  const updateGrid = (newGrid) => {
+    setGrid(newGrid);
+    setHistory((currentHistory) => {
+      const newHistory = [
+        ...currentHistory.slice(0, historyIndex + 1),
+        newGrid,
+      ];
+      return newHistory;
+    });
+    setHistoryIndex((currentIndex) => currentIndex + 1);
+  };
+
+  const undoMove = () => {
+    if (historyIndex > 0) {
+      const newHistoryIndex = historyIndex - 1;
+      setHistoryIndex(newHistoryIndex);
+      const newGrid = history[newHistoryIndex];
+      setGrid(newGrid);
+    }
+  };
+
+  const redoMove = () => {
+    if (historyIndex < history.length - 1) {
+      const newHistoryIndex = historyIndex + 1;
+      setHistoryIndex(newHistoryIndex);
+      const newGrid = history[newHistoryIndex];
+      setGrid(newGrid);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -135,9 +166,10 @@ const Grid = ({ difficulty }) => {
         ]}
       />
       <div
-        // onMouseDown={() => setMouseDown(true)}
-        // onMouseUp={() => console.log("mouseup")}
-        className={`grid grid-cols-${gridSize} my-4`}
+        className="grid my-4"
+        style={{
+          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+        }}
       >
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row">
@@ -146,25 +178,26 @@ const Grid = ({ difficulty }) => {
                 key={`${resetKey}-${row}-${col}`}
                 onMouseDown={() => {
                   setMouseDown(true);
-                  const newTempGrid = [...grid];
-                  newTempGrid[rowIndex][colIndex].state = handleGridButtonClick(
-                    tempGrid[rowIndex][colIndex].state
+                  const newGrid = grid.map((row) =>
+                    row.map((cell) => ({ ...cell }))
                   );
-                  setTempGrid(newTempGrid);
+                  newGrid[rowIndex][colIndex].state = handleGridButtonClick(
+                    newGrid[rowIndex][colIndex].state
+                  );
+                  setGrid(newGrid);
                 }}
                 onMouseOver={() => {
                   if (mouseDown) {
-                    const newTempGrid = [...tempGrid];
-                    newTempGrid[rowIndex][colIndex].state =
-                      handleGridButtonClick(tempGrid[rowIndex][colIndex].state);
-                    setTempGrid(newTempGrid);
+                    const newGrid = grid.map((row) =>
+                      row.map((cell) => ({ ...cell }))
+                    );
+                    newGrid[rowIndex][colIndex].state = handleGridButtonClick(
+                      newGrid[rowIndex][colIndex].state
+                    );
+                    setGrid(newGrid);
                   }
                 }}
-                onMouseUp={() => {
-                  setMouseDown(false);
-                  setGrid(tempGrid);
-                }}
-                buttonState={tempGrid[rowIndex][colIndex].state}
+                buttonState={grid[rowIndex][colIndex].state}
               />
             ))}
           </div>
@@ -182,7 +215,19 @@ const Grid = ({ difficulty }) => {
             id: "reset",
             color: "blue",
             onClick: () => {
-              resetGrid();
+              setModalState(true);
+            },
+            disabled: history.length <= 1 && historyIndex === 0,
+            modal: {
+              title: "Reset grid",
+              message:
+                "Are you sure you want to reset? This resets the grid and clears the history.",
+              onConfirm: () => {
+                resetGrid();
+                setModalState(false);
+              },
+              onCancel: () => setModalState(false),
+              modalState: modalState,
             },
             label: <i className="fa-solid fa-rotate-left"></i>,
           },
@@ -190,17 +235,18 @@ const Grid = ({ difficulty }) => {
             id: "undo",
             color: "blue",
             onClick: () => {
-              // undoMove();
+              undoMove();
             },
+            disabled: historyIndex === 0,
             label: <i className="fa-solid fa-left-long"></i>,
           },
           {
             id: "redo",
             color: "blue",
             onClick: () => {
-              // redoMove();
+              redoMove();
             },
-            disabled: true,
+            disabled: historyIndex === history.length - 1,
             label: <i className="fa-solid fa-right-long"></i>,
           },
         ]}

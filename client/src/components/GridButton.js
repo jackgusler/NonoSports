@@ -1,7 +1,7 @@
 // GridButton.js
 import React from 'react';
 
-const GridButton = ({ onMouseDown, onMouseUp, onMouseOver, buttonState }) => {
+const GridButton = ({ onMouseDown, onMouseOver, buttonState }) => {
   const getButtonColor = () => {
     switch (buttonState) {
       case 'checked':
@@ -16,7 +16,6 @@ const GridButton = ({ onMouseDown, onMouseUp, onMouseOver, buttonState }) => {
   return (
     <button
       onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
       onMouseOver={onMouseOver}
       style={{
         backgroundColor: getButtonColor(),

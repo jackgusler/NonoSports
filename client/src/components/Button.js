@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import Modal from "./Modal";
 
-const Button = ({ color, children, onClick, active, disabled = false }) => {
+const Button = ({
+  color,
+  children,
+  onClick,
+  active,
+  disabled = false,
+  modal,
+}) => {
   const baseStyle =
     "font-bold py-2 px-4 border-b-4 rounded transform transition-all duration-150";
   const colorStyle = {
@@ -46,32 +54,42 @@ const Button = ({ color, children, onClick, active, disabled = false }) => {
   const backgroundColor = tailwindToHex[backgroundColorClass];
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "center",
-        padding: "5px",
-        background: backgroundColor,
-        borderRadius: "5px",
-        height: "30px",
-      }}
-    >
-      <button
-        className={`
+    <>
+      {modal && modal.modalState && (
+        <Modal
+          title={modal.title}
+          message={modal.message}
+          onConfirm={modal.onConfirm}
+          onCancel={modal.onCancel}
+        />
+      )}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          padding: "5px",
+          background: backgroundColor,
+          borderRadius: "5px",
+          height: "30px",
+        }}
+      >
+        <button
+          className={`
         ${baseStyle}
         ${active ? activeColorStyle[color] : colorStyle[color]}
         ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
-        onClick={(e) => {
-          if (!disabled) {
-            onClick(e);
-          }
-        }}
-        disabled={disabled}
-      >
-        {children}
-      </button>
-    </div>
+          onClick={(e) => {
+            if (!disabled) {
+              onClick(e);
+            }
+          }}
+          disabled={disabled}
+        >
+          {children}
+        </button>
+      </div>
+    </>
   );
 };
 

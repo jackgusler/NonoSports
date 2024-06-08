@@ -42,6 +42,7 @@ function ButtonGroup({ isActive, multiActive = {}, buttons }) {
               onClick={() => handleClick(button)}
               active={isActive && activeButtons.includes(button.id)}
               disabled={button.disabled}
+              modal={button.modal}
             >
               {button.label}
             </Button>
