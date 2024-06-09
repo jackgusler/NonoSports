@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
 
@@ -12,6 +12,7 @@ const Grid = ({ difficulty }) => {
   const [gridSize, setGridSize] = useState(difficultyMap[difficulty] || 5);
   const [modalState, setModalState] = useState(false);
   const [actionState, setActionState] = useState("checking");
+  const [currentAction, setCurrentAction] = useState(null); // New state for current action
   const [resetKey, setResetKey] = useState(0);
   const [mouseDown, setMouseDown] = useState(false);
 
@@ -31,6 +32,7 @@ const Grid = ({ difficulty }) => {
   useEffect(() => {
     const handleMouseUp = () => {
       setMouseDown(false);
+      setCurrentAction(null); // Clear current action on mouse up
       if (!gridsAreEqual(grid, history[historyIndex])) {
         updateGrid(grid);
       }
@@ -42,6 +44,7 @@ const Grid = ({ difficulty }) => {
   const handleMouseLeave = () => {
     if (mouseDown) {
       setMouseDown(false);
+      setCurrentAction(null); // Clear current action on mouse leave
       if (!gridsAreEqual(grid, history[historyIndex])) {
         updateGrid(grid);
       }
@@ -57,27 +60,33 @@ const Grid = ({ difficulty }) => {
   };
 
   const handleGridButtonClick = (currentButtonState) => {
-    switch (actionState) {
+    switch (currentAction) {
       case "checking":
-        if (currentButtonState === null) return "checked";
-        break;
+        return currentButtonState === null ? "checked" : currentButtonState;
       case "unchecking":
-        if (currentButtonState === "checked") return null;
-        break;
+        return currentButtonState === "checked" ? null : currentButtonState;
       case "marking":
-        if (currentButtonState === null) return "marked";
-        break;
+        return currentButtonState === null ? "marked" : currentButtonState;
       case "unmarking":
-        if (currentButtonState === "marked") return null;
-        break;
-      case "uncheckingAndUnmarking":
-        if (currentButtonState === "checked" || currentButtonState === "marked")
-          return null;
-        break;
+        return currentButtonState === "marked" ? null : currentButtonState;
       default:
-        break;
+        return currentButtonState;
     }
-    return currentButtonState;
+  };
+
+  const getNewState = (currentState, action) => {
+    switch (action) {
+      case "checking":
+        return "checked";
+      case "unchecking":
+        return null;
+      case "marking":
+        return "marked";
+      case "unmarking":
+        return null;
+      default:
+        return currentState;
+    }
   };
 
   const gridsAreEqual = (grid1, grid2) => {
@@ -121,98 +130,41 @@ const Grid = ({ difficulty }) => {
     }
   };
 
+  const handleMouseDown = (rowIndex, colIndex) => {
+    setMouseDown(true);
+
+    // Determine the current action based on the state of the first cell clicked
+    const firstCellState = grid[rowIndex][colIndex].state;
+    let newAction;
+    if (actionState === "checking") {
+      newAction = firstCellState === null ? "checking" : "unchecking";
+    } else if (actionState === "marking") {
+      newAction = firstCellState === null ? "marking" : "unmarking";
+    }
+    setCurrentAction(newAction);
+
+    const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
+    newGrid[rowIndex][colIndex].state = getNewState(
+      newGrid[rowIndex][colIndex].state,
+      newAction
+    );
+    setGrid(newGrid);
+  };
+
+
+  const handleMouseOver = (rowIndex, colIndex) => {
+    console.log("Mouse over");
+    if (mouseDown) {
+      const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
+      newGrid[rowIndex][colIndex].state = handleGridButtonClick(
+        newGrid[rowIndex][colIndex].state
+      );
+      setGrid(newGrid);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <ButtonGroup
-        isActive={true}
-        multiActive={{
-          checking: false,
-          unchecking: true,
-          marking: false,
-          unmarking: true,
-        }}
-        buttons={[
-          {
-            id: "checking",
-            color: "blue",
-            onClick: () => {
-              setActionState("checking");
-            },
-            label: <i className="fa-solid fa-pen-to-square"></i>,
-          },
-          {
-            id: "unchecking",
-            color: "blue",
-            onClick: (activeButtons) => {
-              if (activeButtons.includes("unmarking")) {
-                setActionState("uncheckingAndUnmarking");
-              } else {
-                setActionState("unchecking");
-              }
-            },
-            label: <i className="fa-regular fa-pen-to-square"></i>,
-          },
-          {
-            id: "marking",
-            color: "red",
-            onClick: () => {
-              setActionState("marking");
-            },
-            label: <i className="fas fa-flag"></i>,
-          },
-          {
-            id: "unmarking",
-            color: "red",
-            onClick: (activeButtons) => {
-              if (activeButtons.includes("unchecking")) {
-                setActionState("uncheckingAndUnmarking");
-              } else {
-                setActionState("unmarking");
-              }
-            },
-            label: <i className="fa-regular fa-flag"></i>,
-          },
-        ]}
-      />
-      <div
-        className="grid my-4"
-        style={{
-          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-        }}
-        onMouseLeave={handleMouseLeave} // Attach handleMouseLeave here
-      >
-        {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="grid-row">
-            {row.map(({ row, col }, colIndex) => (
-              <GridButton
-                key={`${resetKey}-${row}-${col}`}
-                onMouseDown={() => {
-                  setMouseDown(true);
-                  const newGrid = grid.map((row) =>
-                    row.map((cell) => ({ ...cell }))
-                  );
-                  newGrid[rowIndex][colIndex].state = handleGridButtonClick(
-                    newGrid[rowIndex][colIndex].state
-                  );
-                  setGrid(newGrid);
-                }}
-                onMouseOver={() => {
-                  if (mouseDown) {
-                    const newGrid = grid.map((row) =>
-                      row.map((cell) => ({ ...cell }))
-                    );
-                    newGrid[rowIndex][colIndex].state = handleGridButtonClick(
-                      newGrid[rowIndex][colIndex].state
-                    );
-                    setGrid(newGrid);
-                  }
-                }}
-                buttonState={grid[rowIndex][colIndex].state}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
       <ButtonGroup
         isActive={false}
         multiActive={{
@@ -258,6 +210,53 @@ const Grid = ({ difficulty }) => {
             },
             disabled: historyIndex === history.length - 1,
             label: <i className="fa-solid fa-right-long"></i>,
+          },
+        ]}
+      />
+      <div
+        className="grid my-4"
+        style={{
+          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+        }}
+        onMouseLeave={handleMouseLeave} // Attach handleMouseLeave here
+      >
+        {grid.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid-row">
+            {row.map(({ row, col }, colIndex) => (
+              <GridButton
+                key={`${resetKey}-${row}-${col}`}
+                onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                buttonState={grid[rowIndex][colIndex].state}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+      <ButtonGroup
+        isActive={true}
+        multiActive={{
+          checking: false,
+          unchecking: true,
+          marking: false,
+          unmarking: true,
+        }}
+        buttons={[
+          {
+            id: "checking",
+            color: "blue",
+            onClick: () => {
+              setActionState("checking");
+            },
+            label: <i className="fa-solid fa-marker"></i>,
+          },
+          {
+            id: "marking",
+            color: "red",
+            onClick: () => {
+              setActionState("marking");
+            },
+            label: <i className="fas fa-flag"></i>,
           },
         ]}
       />
