@@ -39,6 +39,15 @@ const Grid = ({ difficulty }) => {
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, [grid, history, historyIndex]);
 
+  const handleMouseLeave = () => {
+    if (mouseDown) {
+      setMouseDown(false);
+      if (!gridsAreEqual(grid, history[historyIndex])) {
+        updateGrid(grid);
+      }
+    }
+  };
+
   const resetGrid = () => {
     const newGrid = createEmptyGrid();
     setGrid(newGrid);
@@ -170,6 +179,7 @@ const Grid = ({ difficulty }) => {
         style={{
           gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
         }}
+        onMouseLeave={handleMouseLeave} // Attach handleMouseLeave here
       >
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid-row">
