@@ -153,7 +153,6 @@ const Grid = ({ difficulty }) => {
 
 
   const handleMouseOver = (rowIndex, colIndex) => {
-    console.log("Mouse over");
     if (mouseDown) {
       const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
       newGrid[rowIndex][colIndex].state = handleGridButtonClick(
