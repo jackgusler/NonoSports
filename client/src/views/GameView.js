@@ -1,25 +1,40 @@
-// game view, where the game is played and needs:
-// difficulty and category props from App.js
-// based on difficulty, set the grid size
-// get the image based on the category
-
 // GameView.js
-// GameView.js
-import React from 'react';
-import Grid from '../components/Grid';
-import Converter from '../components/Converter';
-
-const handleEmittedData = (data) => {
-  console.log(data);
-};
+import React, { useState, useEffect } from "react";
+import Grid from "../components/Grid";
+import Converter from "../components/Converter";
 
 const GameView = ({ categories, difficulty }) => {
+  const [size, setSize] = useState([0, 0]);
+  const [title, setTitle] = useState("");
+  const [imagePath, setImagePath] = useState("");
+  const [winningGrid, setWinningGrid] = useState([]);
+  const [dataEmitted, setDataEmitted] = useState(false);
+
+  const handleEmittedData = (data) => {
+    setSize(data.size);
+    setTitle(data.title);
+    setImagePath(data.imagePath);
+    setWinningGrid(data.winningGrid);
+    setDataEmitted(true);
+  };
+
   return (
     <div>
-      <Converter difficulty={difficulty} categories={categories} onEmitData={handleEmittedData} />
-      <Grid difficulty={difficulty} />
+      <Converter
+        difficulty={difficulty}
+        categories={categories}
+        onEmitData={handleEmittedData}
+      />
+      {dataEmitted && (
+        <Grid
+          size={size}
+          title={title}
+          imagePath={imagePath}
+          winningGrid={winningGrid}
+        />
+      )}
     </div>
   );
-}
+};
 
 export default GameView;

@@ -1,5 +1,5 @@
 import "../index.css";
-import React from "react";
+import React, { useEffect } from "react";
 import ButtonGroup from "../components/ButtonGroup";
 
 function StartingView({ setCategories, setDifficulty, setGameStarted }) {

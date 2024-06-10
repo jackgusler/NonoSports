@@ -35,3 +35,24 @@ code {
   0% {opacity:1;}
   100% {opacity:0;}
 }
+
+.grid-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.number-top, .number-left {
+  position: absolute;
+  align-self: center;
+}
+
+.number-top {
+  top: -1rem;
+}
+
+.number-left {
+  left: -1rem;
+}

@@ -1,15 +1,40 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
+import NumberRow from "./NumberRow";
 
-const difficultyMap = {
-  easy: 15,
-  medium: 20,
-  hard: 25,
-};
+const Grid = ({ size, title, imagePath, winningGrid }) => {
+  const calculateRowNumbers = (winningGrid) => {
+    const rowNumbers = winningGrid.map((row) => {
+      let numbers = [];
+      let count = 0;
+      row.forEach((cell) => {
+        if (cell === 1) {
+          count++;
+        } else if (count > 0) {
+          numbers.push(count);
+          count = 0;
+        }
+      });
+      if (count > 0) {
+        numbers.push(count);
+      }
+      return numbers;
+    });
+    return rowNumbers;
+  };
 
-const Grid = ({ difficulty }) => {
-  const [gridSize, setGridSize] = useState(difficultyMap[difficulty] || 5);
+  const calculateColNumbers = (winningGrid) => {
+    const transposedGrid = winningGrid[0].map((col, i) =>
+      winningGrid.map((row) => row[i])
+    );
+    return calculateRowNumbers(transposedGrid);
+  };
+
+  // Inside your Grid component
+  const rowNumbers = calculateRowNumbers(winningGrid);
+  const colNumbers = calculateColNumbers(winningGrid);
+
   const [modalState, setModalState] = useState(false);
   const [actionState, setActionState] = useState("checking");
   const [currentAction, setCurrentAction] = useState(null); // New state for current action
@@ -17,10 +42,10 @@ const Grid = ({ difficulty }) => {
   const [mouseDown, setMouseDown] = useState(false);
 
   const createEmptyGrid = () =>
-    Array(gridSize)
+    Array(size[0])
       .fill()
       .map((_, row) =>
-        Array(gridSize)
+        Array(size[1])
           .fill()
           .map((_, col) => ({ row, col, state: 0 }))
       );
@@ -136,7 +161,6 @@ const Grid = ({ difficulty }) => {
     setGrid(newGrid);
   };
 
-
   const handleMouseOver = (rowIndex, colIndex) => {
     if (mouseDown) {
       const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
@@ -201,23 +225,84 @@ const Grid = ({ difficulty }) => {
       <div
         className="grid my-4"
         style={{
-          gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
         }}
         onMouseLeave={handleMouseLeave} // Attach handleMouseLeave here
       >
-        {grid.map((row, rowIndex) => (
+        {Array.from({ length: size[0] }).map((_, rowIndex) => (
           <div key={rowIndex} className="grid-row">
-            {row.map(({ row, col }, colIndex) => (
-              <GridButton
-                key={`${resetKey}-${row}-${col}`}
-                onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                buttonState={grid[rowIndex][colIndex].state}
-              />
+            {Array.from({ length: size[1] }).map((_, colIndex) => (
+              <div
+                key={`${resetKey}-${rowIndex}-${colIndex}`}
+                className="grid-cell"
+              >
+                {rowIndex === 0 && (
+                  <div className="number-left flex flex-row">
+                    <NumberRow
+                      orientation="left"
+                      numbers={colNumbers[colIndex]}
+                    />
+                  </div>
+                )}
+                {colIndex === 0 && (
+                  <div className="number-top">
+                    <NumberRow
+                      orientation="top"
+                      numbers={rowNumbers[rowIndex]}
+                    />
+                  </div>
+                )}
+                <GridButton
+                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                  onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                  buttonState={grid[rowIndex][colIndex].state}
+                />
+              </div>
             ))}
           </div>
         ))}
       </div>
+
+      <div
+        className="grid my-4"
+        style={{
+          gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
+        }}
+      >
+        {Array.from({ length: size[0] }).map((_, rowIndex) => (
+          <div key={rowIndex} className="grid-row">
+            {Array.from({ length: size[1] }).map((_, colIndex) => (
+              <div
+                key={`${resetKey}-${rowIndex}-${colIndex}`}
+                className="grid-cell"
+              >
+                {rowIndex === 0 &&
+                  colNumbers[colIndex].map((number, index) => (
+                    <span
+                      key={index}
+                      className="number-left text-xs"
+                      style={{ marginRight: `${0.5 * (index + 1)}rem` }} // Adjust the margin-right based on the index
+                    >
+                      {number}
+                    </span>
+                  ))}
+                {colIndex === 0 &&
+                  rowNumbers[rowIndex].map((number, index) => (
+                    <span
+                      key={index}
+                      className="number-top text-xs"
+                      style={{ marginBottom: `${0.5 * (index + 1)}rem` }} // Adjust the margin-bottom based on the index
+                    >
+                      {number}
+                    </span>
+                  ))}
+                <GridButton buttonState={winningGrid[rowIndex][colIndex]} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
       <ButtonGroup
         isActive={true}
         multiActive={{
@@ -244,6 +329,13 @@ const Grid = ({ difficulty }) => {
             label: <i className="fas fa-flag"></i>,
           },
         ]}
+      />
+
+      {/* display the image from imagePath */}
+      <img
+        src={imagePath}
+        alt={title}
+        style={{ width: "200px", height: "200px" }}
       />
     </div>
   );

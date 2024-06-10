@@ -64,6 +64,11 @@ const Converter = ({ difficulty, categories, onEmitData }) => {
         bwPixels.push(row);
       }
 
+      // flip the images rows and columns
+      bwPixels = bwPixels[0].map((_, colIndex) =>
+        bwPixels.map((row) => row[colIndex])
+      );
+
       const trimmedBwPixels = removeWhiteEdges(bwPixels);
       const title = getTitle(imageUrl);
       const winningGrid = calculateWinningGrid(trimmedBwPixels);
