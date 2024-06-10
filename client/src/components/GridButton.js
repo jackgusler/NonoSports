@@ -4,11 +4,11 @@ import React from 'react';
 const GridButton = ({ onMouseDown, onMouseOver, buttonState }) => {
   const getButtonColor = () => {
     switch (buttonState) {
-      case 'checked':
-        return '#93C5FD';
-      case 'marked':
+      case 0:
         return 'white';
-      default:
+      case 1:
+        return '#93C5FD';
+      case 2:
         return 'white';
     }
   };
@@ -27,10 +27,10 @@ const GridButton = ({ onMouseDown, onMouseOver, buttonState }) => {
         alignItems: 'center',
       }}
     >
-      {buttonState === 'marked' && (
+      {buttonState === 2 && (
         <i
-          className="fas fa-flag fa-2x"
-          style={{ color: '#446BA2', width: '24px', height: '24px' }}
+          className="fas fa-flag"
+          style={{ color: '#446BA2'}}
         ></i>
       )}
     </button>
