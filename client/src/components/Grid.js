@@ -59,8 +59,8 @@ const Grid = ({ difficulty }) => {
     setResetKey((prevKey) => prevKey + 1);
   };
 
-  const handleGridButtonClick = (currentButtonState) => {
-    switch (currentAction) {
+  const handleGridButtonClick = (currentButtonState, action) => {
+    switch (action) {
       case "checking":
         return currentButtonState === null ? "checked" : currentButtonState;
       case "unchecking":
@@ -71,21 +71,6 @@ const Grid = ({ difficulty }) => {
         return currentButtonState === "marked" ? null : currentButtonState;
       default:
         return currentButtonState;
-    }
-  };
-
-  const getNewState = (currentState, action) => {
-    switch (action) {
-      case "checking":
-        return "checked";
-      case "unchecking":
-        return null;
-      case "marking":
-        return "marked";
-      case "unmarking":
-        return null;
-      default:
-        return currentState;
     }
   };
 
@@ -144,7 +129,7 @@ const Grid = ({ difficulty }) => {
     setCurrentAction(newAction);
 
     const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
-    newGrid[rowIndex][colIndex].state = getNewState(
+    newGrid[rowIndex][colIndex].state = handleGridButtonClick(
       newGrid[rowIndex][colIndex].state,
       newAction
     );
@@ -156,7 +141,8 @@ const Grid = ({ difficulty }) => {
     if (mouseDown) {
       const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
       newGrid[rowIndex][colIndex].state = handleGridButtonClick(
-        newGrid[rowIndex][colIndex].state
+        newGrid[rowIndex][colIndex].state,
+        currentAction
       );
       setGrid(newGrid);
     }
