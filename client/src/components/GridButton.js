@@ -19,8 +19,8 @@ const GridButton = ({ onMouseDown, onMouseOver, buttonState }) => {
       onMouseOver={onMouseOver}
       style={{
         backgroundColor: getButtonColor(),
-        width: '50px',
-        height: '50px',
+        width: '25px',
+        height: '25px',
         border: '1px solid #446BA2',
         display: 'flex',
         justifyContent: 'center',

@@ -7,10 +7,16 @@
 // GameView.js
 import React from 'react';
 import Grid from '../components/Grid';
+import Converter from '../components/Converter';
 
-const GameView = ({ category, difficulty }) => {
+const handleEmittedData = (data) => {
+  console.log(data);
+};
+
+const GameView = ({ categories, difficulty }) => {
   return (
     <div>
+      <Converter difficulty={difficulty} categories={categories} onEmitData={handleEmittedData} />
       <Grid difficulty={difficulty} />
     </div>
   );

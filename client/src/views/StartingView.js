@@ -2,7 +2,18 @@ import "../index.css";
 import React from "react";
 import ButtonGroup from "../components/ButtonGroup";
 
-function StartingView({ setCategory, setDifficulty, setGameStarted }) {
+function StartingView({ setCategories, setDifficulty, setGameStarted }) {
+  const handleCategoryClick = (category) => {
+    // add category to categories array
+    setCategories((prevCategories) => {
+      if (prevCategories.includes(category)) {
+        return prevCategories.filter((c) => c !== category);
+      } else {
+        return [...prevCategories, category];
+      }
+    });
+  };
+
   return (
     <div className="flex justify-center items-center flex-col space-y-12">
       <div className="container mx-auto flex justify-center space-x-4">
@@ -18,33 +29,25 @@ function StartingView({ setCategory, setDifficulty, setGameStarted }) {
             {
               id: "MLB",
               color: "blue",
-              onClick: () => {
-                setCategory("MLB");
-              },
+              onClick: () => handleCategoryClick("MLB"),
               label: "MLB",
             },
             {
               id: "NBA",
               color: "red",
-              onClick: () => {
-                setCategory("NBA");
-              },
+              onClick: () => handleCategoryClick("NBA"),
               label: "NBA",
             },
             {
               id: "NFL",
               color: "green",
-              onClick: () => {
-                setCategory("NFL");
-              },
+              onClick: () => handleCategoryClick("NFL"),
               label: "NFL",
             },
             {
               id: "NHL",
               color: "black",
-              onClick: () => {
-                setCategory("NHL");
-              },
+              onClick: () => handleCategoryClick("NHL"),
               label: "NHL",
             },
           ]}

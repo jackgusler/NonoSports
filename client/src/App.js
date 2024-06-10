@@ -7,7 +7,7 @@ import GameView from "./views/GameView";
 
 function App() {
   const [difficulty, setDifficulty] = useState("easy");
-  const [category, setCategory] = useState("MLB");
+  const [categories, setCategories] = useState(["MLB"]); // Change to array
   const [gameStarted, setGameStarted] = useState(false);
 
   return (
@@ -15,10 +15,10 @@ function App() {
       <h1 className="text-4xl font-bold mt-10">SportNogram</h1>
       <div className="flex-grow flex items-center">
         {gameStarted ? (
-          <GameView category={category} difficulty={difficulty} className="fade-in" />
+          <GameView categories={categories} difficulty={difficulty}/> // Pass array to GameView
         ) : (
           <StartingView
-            setCategory={setCategory}
+            setCategories={setCategories} // Update function name
             setDifficulty={setDifficulty}
             setGameStarted={setGameStarted}
             className="fade-out"

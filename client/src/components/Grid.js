@@ -3,9 +3,9 @@ import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
 
 const difficultyMap = {
-  easy: 5,
-  medium: 7,
-  hard: 10,
+  easy: 15,
+  medium: 20,
+  hard: 25,
 };
 
 const Grid = ({ difficulty }) => {
