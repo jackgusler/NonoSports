@@ -20,21 +20,36 @@ const GridButton = ({
     }
   };
 
-  const getBorderColor = (side) => {
+  const getBoxShadow = () => {
     const { row, col } = position;
     const { maxRow, maxCol } = max;
-    let color = "#446BA2";
+    let shadows = [];
 
-    if (
-      (side === "top" && col % 3 === 0) ||
-      (side === "right" && (row % 3 === 2 || row === maxRow - 1)) ||
-      (side === "bottom" && (col % 3 === 2 || col === maxCol - 1)) ||
-      (side === "left" && row % 3 === 0)
-    ) {
-      color = "black";
+    // Black border conditions
+    let topShadow = col % 3 === 0 ? "0px -1px 0px 0px black" : null;
+    let rightShadow =
+      row % 3 === 2 || row === maxRow - 1 ? "1px 0px 0px 0px black" : null;
+    let bottomShadow =
+      col % 3 === 2 || col === maxCol - 1 ? "0px 1px 0px 0px black" : null;
+    let leftShadow = row % 3 === 0 ? "-1px 0px 0px 0px black" : null;
+
+    // if top right and left are blue and bottom is black, then make the left shadow -1px -1px 0px 0px #93add2
+    if (!topShadow && !rightShadow && !leftShadow && bottomShadow) {
+      leftShadow = "-1px -1px 0px 0px #93add2";
+    }
+    if (!topShadow && rightShadow && !leftShadow && bottomShadow) {
+      leftShadow = "-1px -1px 0px 0px #93add2";
     }
 
-    return color;
+    // Blue border conditions
+    if (!topShadow) topShadow = "0px -1px 0px 0px #93add2";
+    if (!rightShadow) rightShadow = "1px 0px 0px 0px #93add2";
+    if (!bottomShadow) bottomShadow = "0px 1px 0px 0px #93add2";
+    if (!leftShadow) leftShadow = "-1px 0px 0px 0px #93add2";
+
+    shadows.push(topShadow, rightShadow, bottomShadow, leftShadow);
+
+    return shadows.join(", ");
   };
 
   return (
@@ -45,13 +60,11 @@ const GridButton = ({
         backgroundColor: getButtonColor(),
         width: "25px",
         height: "25px",
-        borderTop: `1px solid ${getBorderColor("top")}`,
-        borderRight: `1px solid ${getBorderColor("right")}`,
-        borderBottom: `1px solid ${getBorderColor("bottom")}`,
-        borderLeft: `1px solid ${getBorderColor("left")}`,
+        boxShadow: getBoxShadow(),
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        border: "none", // Remove default borders
       }}
     >
       {buttonState === 2 && (
