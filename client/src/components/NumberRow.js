@@ -1,10 +1,10 @@
 import React from "react";
 
-const NumberRow = ({ orientation, numbers }) => {
+const NumberRow = ({ orientation, numbers, winningGrid, userGrid }) => {
   return (
     <div
       style={{
-        width: `${numbers.length * 1}rem`, // Adjust the multiplier as needed
+        width: `${numbers.length * 1}rem`,
         height: "1rem",
         position: "absolute",
         transform:
@@ -19,20 +19,30 @@ const NumberRow = ({ orientation, numbers }) => {
       <div
         className={`flex items-center ${
           orientation === "top" ? "justify-center" : "justify-end"
-        }`} // Apply "justify-center" if orientation is "top", else apply "justify-end"
+        }`}
         style={{ width: "100%" }}
       >
         {numbers.length > 0 ? (
           numbers.map((number, index) => (
-            <span
+            <div
               key={index}
               style={{
-                transform: orientation === "top" ? "rotate(-90deg)" : "none", // Rotate the numbers when orientation is "top"
-                margin: "0 0.25rem", // Add horizontal spacing between the numbers
+                width: orientation === "top" ? '1rem' : 'auto', // Apply the fixed width only when the orientation is "top"
+                height: orientation === "top" ? '1rem' : 'auto', // Apply the fixed height only when the orientation is "top"
+                display: 'flex', // Use flexbox to center the number
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {number}
-            </span>
+              <span
+                style={{
+                  transform: orientation === "top" ? "rotate(-90deg)" : "none",
+                  margin: "0 0.25rem",
+                }}
+              >
+                {number}
+              </span>
+            </div>
           ))
         ) : (
           <span
@@ -41,8 +51,8 @@ const NumberRow = ({ orientation, numbers }) => {
               transform:
                 orientation === "top"
                   ? "rotate(-90deg) translateY(-8px)"
-                  : "none", // Rotate the numbers when orientation is "top"
-              margin: "0 0.25rem", // Add horizontal spacing between the numbers
+                  : "none",
+              margin: "0 0.25rem",
             }}
           >
             0

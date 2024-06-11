@@ -7,6 +7,8 @@ const GridButton = ({
   position,
   max,
 }) => {
+  let rightBorder = false;
+
   const getButtonColor = () => {
     switch (buttonState) {
       case 0:
@@ -33,16 +35,37 @@ const GridButton = ({
       col % 3 === 2 || col === maxCol - 1 ? "0px 1px 0px 0px black" : null;
     let leftShadow = row % 3 === 0 ? "-1px 0px 0px 0px black" : null;
 
-    if ((row === 0 && col === 0) || (row === maxRow - 1 && col === 0)) {
-      topShadow = "0px 0px 0px 1px black";
+    if (row === 0) {
+      leftShadow = "-1px 1px 0px 1px black";
     }
 
-    if (
-      (row === 0 && col === maxCol - 1) ||
-      (row === maxRow - 1 && col === maxCol - 1)
-    ) {
-      bottomShadow = "0px 0px 0px 1px black";
+    if (col === 0) {
+      topShadow = "1px -1px 0px 1px black";
     }
+
+    if (row === maxRow - 1) {
+      rightShadow = "1px 0px 0px 1px black";
+    }
+
+    if (col === maxCol - 1) {
+      bottomShadow = "1px 1px 0px 1px black";
+    }
+
+    if (row === 0 && col === 0) {
+      topShadow = "0px 0px 0px 2px black";
+    }
+
+    // if (row === 0 && col === maxCol - 1) {
+    //   bottomShadow = "0px 0px 0px 1px black";
+    // }
+
+    // if (row === maxRow - 1 && col === 0) {
+    //   rightBorder = true;
+    // }
+
+    // if (row === maxRow - 1 && col === maxCol - 1) {
+    //   rightBorder = true
+    // }
 
     if (
       !topShadow &&
@@ -86,7 +109,6 @@ const GridButton = ({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        border: "none", // Remove default borders
       }}
     >
       {buttonState === 2 && (

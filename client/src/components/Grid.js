@@ -241,17 +241,24 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
                   <NumberRow
                     orientation="left"
                     numbers={colNumbers[colIndex]}
+                    winningGrid={winningGrid}
+                    userGrid={grid}
                   />
                 )}
                 {colIndex === 0 && (
-                  <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
+                  <NumberRow
+                    orientation="top"
+                    numbers={rowNumbers[rowIndex]}
+                    winningGrid={winningGrid}
+                    userGrid={grid}
+                  />
                 )}
                 <GridButton
                   onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                   onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
                   buttonState={grid[rowIndex][colIndex].state}
                   position={{ row: rowIndex, col: colIndex }}
-                  max = {{maxRow: size[0], maxCol: size[1]}}
+                  max={{ maxRow: size[0], maxCol: size[1] }}
                 />
               </div>
             ))}
