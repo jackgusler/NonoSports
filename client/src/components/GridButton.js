@@ -74,7 +74,7 @@ const GridButton = ({
       bottomShadow &&
       col !== maxCol - 1
     ) {
-      leftShadow = "-1px -1px 0px 0px #93add2";
+      leftShadow = "-1px -1px 0px 0px #BFBFBF";
     }
     if (
       !topShadow &&
@@ -83,14 +83,14 @@ const GridButton = ({
       bottomShadow &&
       col !== maxCol - 1
     ) {
-      leftShadow = "-1px -1px 0px 0px #93add2";
+      leftShadow = "-1px -1px 0px 0px #BFBFBF";
     }
 
     // Blue border conditions
-    if (!topShadow) topShadow = "0px -1px 0px 0px #93add2";
-    if (!rightShadow) rightShadow = "1px 0px 0px 0px #93add2";
-    if (!bottomShadow) bottomShadow = "0px 1px 0px 0px #93add2";
-    if (!leftShadow) leftShadow = "-1px 0px 0px 0px #93add2";
+    if (!topShadow) topShadow = "0px -1px 0px 0px #BFBFBF";
+    if (!rightShadow) rightShadow = "1px 0px 0px 0px #BFBFBF";
+    if (!bottomShadow) bottomShadow = "0px 1px 0px 0px #BFBFBF";
+    if (!leftShadow) leftShadow = "-1px 0px 0px 0px #BFBFBF";
 
     shadows.push(topShadow, rightShadow, bottomShadow, leftShadow);
 

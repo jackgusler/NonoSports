@@ -111,28 +111,39 @@ const Converter = ({ difficulty, categories, onEmitData }) => {
   const removeWhiteEdges = (bwImage) => {
     // Remove white rows
     while (bwImage.length > 0 && bwImage[0].every((cell) => cell === 0)) {
-      bwImage.shift();
+        bwImage.shift();
     }
     while (
-      bwImage.length > 0 &&
-      bwImage[bwImage.length - 1].every((cell) => cell === 0)
+        bwImage.length > 0 &&
+        bwImage[bwImage.length - 1].every((cell) => cell === 0)
     ) {
-      bwImage.pop();
+        bwImage.pop();
     }
 
     // Remove white columns
     while (bwImage.length > 0 && bwImage.every((row) => row[0] === 0)) {
-      bwImage.forEach((row) => row.shift());
+        bwImage.forEach((row) => row.shift());
     }
     while (
-      bwImage.length > 0 &&
-      bwImage.every((row) => row[row.length - 1] === 0)
+        bwImage.length > 0 &&
+        bwImage.every((row) => row[row.length - 1] === 0)
     ) {
-      bwImage.forEach((row) => row.pop());
+        bwImage.forEach((row) => row.pop());
+    }
+
+    // Ensure the image is not 7x7, 8x8 or 9x9
+    if (bwImage.length >= 7 && bwImage.length <= 9 || bwImage[0].length >= 7 && bwImage[0].length <= 9) {
+        while (bwImage.length < 10) {
+            const newRow = new Array(bwImage[0].length).fill(0);
+            bwImage.push(newRow);
+        }
+        while (bwImage[0].length < 10) {
+            bwImage.forEach((row) => row.push(0));
+        }
     }
 
     return bwImage;
-  };
+};
 
   const calculateWinningGrid = (bwImage) => {
     return [...bwImage.map((row) => [...row])];

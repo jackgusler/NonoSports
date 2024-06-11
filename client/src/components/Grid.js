@@ -172,6 +172,27 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
     }
   };
 
+  const didYouWin = (grid, winningGrid) => {
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j].state === 1 && winningGrid[i][j] === 0) {
+          return false;
+        }
+        if (grid[i][j].state === 0 && winningGrid[i][j] === 1) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (didYouWin(grid, winningGrid)) {
+      alert("You win!");
+      console.log("You win!");
+    }
+  }, [grid, winningGrid]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '90vh' }}>
     <ButtonGroup
@@ -336,6 +357,10 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             },
           ]}
         />
+
+        {/* <span className="text-center text-gray-500 text-sm">
+          {title}
+        </span> */}
 
     </div>
   );
