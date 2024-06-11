@@ -173,8 +173,8 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <ButtonGroup
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '90vh' }}>
+    <ButtonGroup
         isActive={false}
         multiActive={{
           reset: false,
@@ -222,6 +222,7 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
           },
         ]}
       />
+
       <div
         className="grid my-4"
         style={{
@@ -264,14 +265,14 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             ))}
           </div>
         ))}
-        {/* bottom */}
         <div
           style={{
             position: "absolute",
-            bottom: "-20px",
+            top: "calc(100% + 5px)",
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
+            flexDirection: "row",
             alignItems: "center",
           }}
         >
@@ -285,12 +286,11 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             style={{ marginLeft: "5px" }}
           ></i>
         </div>
-        {/* right */}
         <div
           style={{
             position: "absolute",
             top: "50%",
-            right: "-20px",
+            left: "calc(100% + 10px)",
             transform: "translateY(-50%)",
             display: "flex",
             flexDirection: "column",
@@ -309,69 +309,34 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
         </div>
       </div>
 
-      {/* <div
-        className="grid my-4"
-        style={{
-          gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
-        }}
-      >
-        {Array.from({ length: size[0] }).map((_, rowIndex) => (
-          <div key={rowIndex} className="grid-row">
-            {Array.from({ length: size[1] }).map((_, colIndex) => (
-              <div
-                key={`${resetKey}-${rowIndex}-${colIndex}`}
-                className="grid-cell"
-              >
-                {rowIndex === 0 && (
-                  <NumberRow
-                    orientation="left"
-                    numbers={colNumbers[colIndex]}
-                  />
-                )}
-                {colIndex === 0 && (
-                  <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
-                )}
-                <GridButton buttonState={winningGrid[rowIndex][colIndex]} />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div> */}
-
-      <ButtonGroup
-        isActive={true}
-        multiActive={{
-          checking: false,
-          unchecking: true,
-          marking: false,
-          unmarking: true,
-        }}
-        buttons={[
-          {
-            id: "checking",
-            color: "blue",
-            onClick: () => {
-              setActionState("checking");
+        <ButtonGroup
+          isActive={true}
+          multiActive={{
+            checking: false,
+            unchecking: true,
+            marking: false,
+            unmarking: true,
+          }}
+          buttons={[
+            {
+              id: "checking",
+              color: "blue",
+              onClick: () => {
+                setActionState("checking");
+              },
+              label: <i className="fa-solid fa-marker"></i>,
             },
-            label: <i className="fa-solid fa-marker"></i>,
-          },
-          {
-            id: "marking",
-            color: "red",
-            onClick: () => {
-              setActionState("marking");
+            {
+              id: "marking",
+              color: "red",
+              onClick: () => {
+                setActionState("marking");
+              },
+              label: <i className="fa-solid fa-xmark"></i>,
             },
-            label: <i className="fa-solid fa-xmark"></i>,
-          },
-        ]}
-      />
+          ]}
+        />
 
-      {/* display the image from imagePath */}
-      <img
-        src={imagePath}
-        alt={title}
-        style={{ width: "200px", height: "200px" }}
-      />
     </div>
   );
 };
