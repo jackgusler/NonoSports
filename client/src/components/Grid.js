@@ -308,7 +308,7 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             onClick: () => {
               setActionState("marking");
             },
-            label: <i class="fa-solid fa-xmark"></i>,
+            label: <i className="fa-solid fa-xmark"></i>,
           },
         ]}
       />
