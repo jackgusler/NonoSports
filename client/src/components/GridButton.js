@@ -33,7 +33,17 @@ const GridButton = ({
       col % 3 === 2 || col === maxCol - 1 ? "0px 1px 0px 0px black" : null;
     let leftShadow = row % 3 === 0 ? "-1px 0px 0px 0px black" : null;
 
-    // if top right and left are blue and bottom is black, then make the left shadow -1px -1px 0px 0px #93add2
+    if ((row === 0 && col === 0) || (row === maxRow - 1 && col === 0)) {
+      topShadow = "0px 0px 0px 1px black";
+    }
+
+    if (
+      (row === 0 && col === maxCol - 1) ||
+      (row === maxRow - 1 && col === maxCol - 1)
+    ) {
+      bottomShadow = "0px 0px 0px 1px black";
+    }
+
     if (
       !topShadow &&
       !rightShadow &&
