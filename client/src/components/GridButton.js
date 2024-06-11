@@ -28,7 +28,7 @@ const GridButton = ({ onMouseDown, onMouseOver, buttonState }) => {
       }}
     >
       {buttonState === 2 && (
-        <i class="fa-solid fa-xmark" style={{ color: "#BFBFBF" }}></i>
+        <i className="fa-solid fa-xmark" style={{ color: "#BFBFBF" }}></i>
       )}
     </button>
   );
