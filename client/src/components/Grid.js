@@ -226,8 +226,9 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
         className="grid my-4"
         style={{
           gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
+          position: "relative",
         }}
-        onMouseLeave={handleMouseLeave} // Attach handleMouseLeave here
+        onMouseLeave={handleMouseLeave}
       >
         {Array.from({ length: size[0] }).map((_, rowIndex) => (
           <div key={rowIndex} className="grid-row">
@@ -249,14 +250,59 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
                   onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                   onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
                   buttonState={grid[rowIndex][colIndex].state}
+                  position={{ row: rowIndex, col: colIndex }}
+                  max = {{maxRow: size[0], maxCol: size[1]}}
                 />
               </div>
             ))}
           </div>
         ))}
+        {/* bottom */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <i
+            className="fa-solid fa-arrow-left-long"
+            style={{ marginRight: "5px" }}
+          ></i>
+          <div>{size[0]}</div>
+          <i
+            className="fa-solid fa-arrow-right-long"
+            style={{ marginLeft: "5px" }}
+          ></i>
+        </div>
+        {/* right */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "-20px",
+            transform: "translateY(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <i
+            className="fa-solid fa-arrow-up-long"
+            style={{ marginBottom: "5px" }}
+          ></i>
+          <div>{size[1]}</div>
+          <i
+            className="fa-solid fa-arrow-down-long"
+            style={{ marginTop: "5px" }}
+          ></i>
+        </div>
       </div>
 
-      <div
+      {/* <div
         className="grid my-4"
         style={{
           gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
@@ -266,24 +312,24 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
           <div key={rowIndex} className="grid-row">
             {Array.from({ length: size[1] }).map((_, colIndex) => (
               <div
-              key={`${resetKey}-${rowIndex}-${colIndex}`}
-              className="grid-cell"
-            >
-              {rowIndex === 0 && (
-                <NumberRow
-                  orientation="left"
-                  numbers={colNumbers[colIndex]}
-                />
-              )}
-              {colIndex === 0 && (
-                <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
-              )}
+                key={`${resetKey}-${rowIndex}-${colIndex}`}
+                className="grid-cell"
+              >
+                {rowIndex === 0 && (
+                  <NumberRow
+                    orientation="left"
+                    numbers={colNumbers[colIndex]}
+                  />
+                )}
+                {colIndex === 0 && (
+                  <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
+                )}
                 <GridButton buttonState={winningGrid[rowIndex][colIndex]} />
               </div>
             ))}
           </div>
         ))}
-      </div>
+      </div> */}
 
       <ButtonGroup
         isActive={true}
