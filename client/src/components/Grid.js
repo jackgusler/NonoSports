@@ -237,20 +237,13 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
                 className="grid-cell"
               >
                 {rowIndex === 0 && (
-                  <div className="number-left flex flex-row">
-                    <NumberRow
-                      orientation="left"
-                      numbers={colNumbers[colIndex]}
-                    />
-                  </div>
+                  <NumberRow
+                    orientation="left"
+                    numbers={colNumbers[colIndex]}
+                  />
                 )}
                 {colIndex === 0 && (
-                  <div className="number-top">
-                    <NumberRow
-                      orientation="top"
-                      numbers={rowNumbers[rowIndex]}
-                    />
-                  </div>
+                  <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
                 )}
                 <GridButton
                   onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
@@ -273,29 +266,18 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
           <div key={rowIndex} className="grid-row">
             {Array.from({ length: size[1] }).map((_, colIndex) => (
               <div
-                key={`${resetKey}-${rowIndex}-${colIndex}`}
-                className="grid-cell"
-              >
-                {rowIndex === 0 &&
-                  colNumbers[colIndex].map((number, index) => (
-                    <span
-                      key={index}
-                      className="number-left text-xs"
-                      style={{ marginRight: `${0.5 * (index + 1)}rem` }} // Adjust the margin-right based on the index
-                    >
-                      {number}
-                    </span>
-                  ))}
-                {colIndex === 0 &&
-                  rowNumbers[rowIndex].map((number, index) => (
-                    <span
-                      key={index}
-                      className="number-top text-xs"
-                      style={{ marginBottom: `${0.5 * (index + 1)}rem` }} // Adjust the margin-bottom based on the index
-                    >
-                      {number}
-                    </span>
-                  ))}
+              key={`${resetKey}-${rowIndex}-${colIndex}`}
+              className="grid-cell"
+            >
+              {rowIndex === 0 && (
+                <NumberRow
+                  orientation="left"
+                  numbers={colNumbers[colIndex]}
+                />
+              )}
+              {colIndex === 0 && (
+                <NumberRow orientation="top" numbers={rowNumbers[rowIndex]} />
+              )}
                 <GridButton buttonState={winningGrid[rowIndex][colIndex]} />
               </div>
             ))}
@@ -326,7 +308,7 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             onClick: () => {
               setActionState("marking");
             },
-            label: <i className="fas fa-flag"></i>,
+            label: <i class="fa-solid fa-xmark"></i>,
           },
         ]}
       />
