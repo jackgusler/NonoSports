@@ -1,12 +1,6 @@
 import { useEffect } from "react";
 import images from "../data/images";
 
-const difficultyMap = {
-  easy: 15,
-  medium: 20,
-  hard: 25,
-};
-
 const Converter = ({ difficulty, categories, onEmitData }) => {
   const loadImage = () => {
     const image = new Image();
@@ -31,7 +25,7 @@ const Converter = ({ difficulty, categories, onEmitData }) => {
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const pixels = imgData.data;
 
-      const blockSize = image.width / difficultyMap[difficulty];
+      const blockSize = image.width / difficulty;
       let bwPixels = [];
 
       for (let y = 0; y < image.height; y += blockSize) {

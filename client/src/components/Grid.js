@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
 import NumberRow from "./NumberRow";
+import Modal from "./Modal";
 
 const Grid = ({ size, title, imagePath, winningGrid }) => {
+  // for testing, make winningGrid just 1x1
+  size = [1, 1];
+  winningGrid = [[1]];
   const calculateRowNumbers = (winningGrid) => {
     const rowNumbers = winningGrid.map((row) => {
       let numbers = [];
@@ -31,7 +35,6 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
     return calculateRowNumbers(transposedGrid);
   };
 
-  // Inside your Grid component
   const rowNumbers = calculateRowNumbers(winningGrid);
   const colNumbers = calculateColNumbers(winningGrid);
 
@@ -40,6 +43,8 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
   const [currentAction, setCurrentAction] = useState(null); // New state for current action
   const [resetKey, setResetKey] = useState(0);
   const [mouseDown, setMouseDown] = useState(false);
+  const [won, setWon] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   const createEmptyGrid = () =>
     Array(size[0])
@@ -188,147 +193,157 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
 
   useEffect(() => {
     if (didYouWin(grid, winningGrid)) {
-      alert("You win!");
-      console.log("You win!");
+      setWon(true);
+      setFadeOut(true);
     }
   }, [grid, winningGrid]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '90vh' }}>
-    <ButtonGroup
-        isActive={false}
-        multiActive={{
-          reset: false,
-          undo: false,
-          redo: false,
-        }}
-        buttons={[
-          {
-            id: "reset",
-            color: "blue",
-            onClick: () => {
-              setModalState(true);
-            },
-            disabled: history.length <= 1 && historyIndex === 0,
-            modal: {
-              title: "Reset grid",
-              message:
-                "Are you sure you want to reset? This resets the grid and clears the history.",
-              onConfirm: () => {
-                resetGrid();
-                setModalState(false);
-              },
-              onCancel: () => setModalState(false),
-              modalState: modalState,
-            },
-            label: <i className="fa-solid fa-rotate-left"></i>,
-          },
-          {
-            id: "undo",
-            color: "blue",
-            onClick: () => {
-              undoMove();
-            },
-            disabled: historyIndex === 0,
-            label: <i className="fa-solid fa-left-long"></i>,
-          },
-          {
-            id: "redo",
-            color: "blue",
-            onClick: () => {
-              redoMove();
-            },
-            disabled: historyIndex === history.length - 1,
-            label: <i className="fa-solid fa-right-long"></i>,
-          },
-        ]}
-      />
-
+    <>
       <div
-        className="grid my-4"
         style={{
-          gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
-          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "90vh",
         }}
-        onMouseLeave={handleMouseLeave}
       >
-        {Array.from({ length: size[0] }).map((_, rowIndex) => (
-          <div key={rowIndex} className="grid-row">
-            {Array.from({ length: size[1] }).map((_, colIndex) => (
-              <div
-                key={`${resetKey}-${rowIndex}-${colIndex}`}
-                className="grid-cell"
-              >
-                {rowIndex === 0 && (
-                  <NumberRow
-                    orientation="left"
-                    numbers={colNumbers[colIndex]}
-                    winningGrid={winningGrid}
-                    userGrid={grid}
-                  />
-                )}
-                {colIndex === 0 && (
-                  <NumberRow
-                    orientation="top"
-                    numbers={rowNumbers[rowIndex]}
-                    winningGrid={winningGrid}
-                    userGrid={grid}
-                  />
-                )}
-                <GridButton
-                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                  onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                  buttonState={grid[rowIndex][colIndex].state}
-                  position={{ row: rowIndex, col: colIndex }}
-                  max={{ maxRow: size[0], maxCol: size[1] }}
-                />
+        <ButtonGroup
+          isActive={false}
+          multiActive={{
+            reset: false,
+            undo: false,
+            redo: false,
+          }}
+          buttons={[
+            {
+              id: "reset",
+              color: "blue",
+              onClick: () => {
+                setModalState(true);
+              },
+              disabled: (history.length <= 1 && historyIndex === 0) || won,
+              modal: {
+                title: "Reset grid",
+                message:
+                  "Are you sure you want to reset? This resets the grid and clears the history.",
+                onConfirm: () => {
+                  resetGrid();
+                  setModalState(false);
+                },
+                onCancel: () => setModalState(false),
+                modalState: modalState,
+              },
+              label: <i className="fa-solid fa-rotate-left"></i>,
+            },
+            {
+              id: "undo",
+              color: "blue",
+              onClick: () => {
+                undoMove();
+              },
+              disabled: historyIndex === 0 || won,
+              label: <i className="fa-solid fa-left-long"></i>,
+            },
+            {
+              id: "redo",
+              color: "blue",
+              onClick: () => {
+                redoMove();
+              },
+              disabled: historyIndex === history.length - 1 || won,
+              label: <i className="fa-solid fa-right-long"></i>,
+            },
+          ]}
+        />
+
+        <div style={{ position: "relative" }}>
+          <div
+            className="grid my-4"
+            style={{
+              gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
+              position: "relative",
+            }}
+            onMouseLeave={handleMouseLeave}
+          >
+            {Array.from({ length: size[0] }).map((_, rowIndex) => (
+              <div key={rowIndex} className="grid-row">
+                {Array.from({ length: size[1] }).map((_, colIndex) => (
+                  <div
+                    key={`${resetKey}-${rowIndex}-${colIndex}`}
+                    className="grid-cell"
+                  >
+                    {/* {rowIndex === 0 && (
+                      <NumberRow
+                        orientation="left"
+                        numbers={colNumbers[colIndex]}
+                        winningGrid={winningGrid}
+                        userGrid={grid}
+                      />
+                    )}
+                    {colIndex === 0 && (
+                      <NumberRow
+                        orientation="top"
+                        numbers={rowNumbers[rowIndex]}
+                        winningGrid={winningGrid}
+                        userGrid={grid}
+                      />
+                    )} */}
+                    <GridButton
+                      onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                      onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                      buttonState={grid[rowIndex][colIndex].state}
+                      position={{ row: rowIndex, col: colIndex }}
+                      max={{ maxRow: size[0], maxCol: size[1] }}
+                    />
+                  </div>
+                ))}
               </div>
             ))}
+            <div
+              style={{
+                position: "absolute",
+                top: "calc(100% + 5px)",
+                left: "50%",
+                transform: "translateX(-50%)",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <i
+                className="fa-solid fa-arrow-left-long"
+                style={{ marginRight: "5px" }}
+              ></i>
+              <div>{size[0]}</div>
+              <i
+                className="fa-solid fa-arrow-right-long"
+                style={{ marginLeft: "5px" }}
+              ></i>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "calc(100% + 10px)",
+                transform: "translateY(-50%)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <i
+                className="fa-solid fa-arrow-up-long"
+                style={{ marginBottom: "5px" }}
+              ></i>
+              <div>{size[1]}</div>
+              <i
+                className="fa-solid fa-arrow-down-long"
+                style={{ marginTop: "5px" }}
+              ></i>
+            </div>
           </div>
-        ))}
-        <div
-          style={{
-            position: "absolute",
-            top: "calc(100% + 5px)",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <i
-            className="fa-solid fa-arrow-left-long"
-            style={{ marginRight: "5px" }}
-          ></i>
-          <div>{size[0]}</div>
-          <i
-            className="fa-solid fa-arrow-right-long"
-            style={{ marginLeft: "5px" }}
-          ></i>
         </div>
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "calc(100% + 10px)",
-            transform: "translateY(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <i
-            className="fa-solid fa-arrow-up-long"
-            style={{ marginBottom: "5px" }}
-          ></i>
-          <div>{size[1]}</div>
-          <i
-            className="fa-solid fa-arrow-down-long"
-            style={{ marginTop: "5px" }}
-          ></i>
-        </div>
-      </div>
 
         <ButtonGroup
           isActive={true}
@@ -357,12 +372,25 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             },
           ]}
         />
-
-        {/* <span className="text-center text-gray-500 text-sm">
-          {title}
-        </span> */}
-
-    </div>
+      </div>
+      {won && (
+        <div className="fade-in">
+          <Modal
+            title="You Won!"
+            image={imagePath}
+            message={title}
+            onConfirm={() => {
+              setFadeOut(false);
+              setWon(false);
+              resetGrid();
+            }}
+            onCancel={() => {
+              // handle cancel action here if needed
+            }}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

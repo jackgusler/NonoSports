@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonGroup from "./ButtonGroup";
 
-const Modal = ({ title, message, onConfirm, onCancel }) => (
+const Modal = ({ title, image, message, onConfirm, onCancel }) => (
   <div
     className="fixed z-10 inset-0 overflow-y-auto"
     aria-labelledby="modal-title"
@@ -19,20 +19,37 @@ const Modal = ({ title, message, onConfirm, onCancel }) => (
       >
         &#8203;
       </span>
-      <div className="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
-            style={{
-                backgroundColor: "#023064",
-                }}        
+      <div
+        className={`inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all ease-in duration-200 sm:my-8 sm:align-middle ${
+          image ? "sm:max-w-sm" : "sm:max-w-lg"
+        } sm:w-full`}
+      >
+        {" "}
+        <div
+          className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
+          style={{
+            backgroundColor: "#023064",
+          }}
         >
-          <div className="sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+          <div className="sm:flex sm:items-start sm:justify-center">
+            <div
+              className={`mt-3 ${
+                image ? "text-center" : "sm:text-left"
+              } sm:mt-0 `}
+            >
               <h3
                 className="text-2xl leading-6 font-medium text-white"
                 id="modal-title"
               >
                 {title}
               </h3>
+              {image && (
+                <img
+                  src={image}
+                  alt={title}
+                  className="mt-4 w-40 h-40 mx-auto"
+                />
+              )}
               <div className="mt-2">
                 <p className="text-lg text-gray-300">{message}</p>
               </div>
