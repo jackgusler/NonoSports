@@ -4,10 +4,17 @@ import GridButton from "./GridButton";
 import NumberRow from "./NumberRow";
 import Modal from "./Modal";
 
-const Grid = ({ size, title, imagePath, winningGrid }) => {
+const Grid = ({
+  size,
+  title,
+  imagePath,
+  winningGrid,
+  getNewImage,
+  onGoBack,
+}) => {
   // for testing, make winningGrid just 1x1
-  size = [1, 1];
-  winningGrid = [[1]];
+  // size = [1, 1];
+  // winningGrid = [[1]];
   const calculateRowNumbers = (winningGrid) => {
     const rowNumbers = winningGrid.map((row) => {
       let numbers = [];
@@ -210,56 +217,19 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
       >
         <ButtonGroup
           isActive={false}
-          multiActive={{
-            reset: false,
-            undo: false,
-            redo: false,
-          }}
           buttons={[
             {
-              id: "reset",
-              color: "blue",
-              onClick: () => {
-                setModalState(true);
-              },
-              disabled: (history.length <= 1 && historyIndex === 0) || won,
-              modal: {
-                title: "Reset grid",
-                message:
-                  "Are you sure you want to reset? This resets the grid and clears the history.",
-                onConfirm: () => {
-                  resetGrid();
-                  setModalState(false);
-                },
-                onCancel: () => setModalState(false),
-                modalState: modalState,
-              },
-              label: <i className="fa-solid fa-rotate-left"></i>,
-            },
-            {
-              id: "undo",
-              color: "blue",
-              onClick: () => {
-                undoMove();
-              },
-              disabled: historyIndex === 0 || won,
-              label: <i className="fa-solid fa-left-long"></i>,
-            },
-            {
-              id: "redo",
-              color: "blue",
-              onClick: () => {
-                redoMove();
-              },
-              disabled: historyIndex === history.length - 1 || won,
-              label: <i className="fa-solid fa-right-long"></i>,
+              id: "back",
+              color: "grey",
+              onClick: onGoBack,
+              label: "Back",
             },
           ]}
         />
 
         <div style={{ position: "relative" }}>
           <div
-            className="grid my-4"
+            className="grid my-4 mb-8"
             style={{
               gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
               position: "relative",
@@ -273,7 +243,7 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
                     key={`${resetKey}-${rowIndex}-${colIndex}`}
                     className="grid-cell"
                   >
-                    {/* {rowIndex === 0 && (
+                    {rowIndex === 0 && (
                       <NumberRow
                         orientation="left"
                         numbers={colNumbers[colIndex]}
@@ -288,7 +258,7 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
                         winningGrid={winningGrid}
                         userGrid={grid}
                       />
-                    )} */}
+                    )}
                     <GridButton
                       onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                       onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
@@ -343,32 +313,81 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
               ></i>
             </div>
           </div>
+
+          <ButtonGroup
+            isActive={true}
+            multiActive={{
+              checking: false,
+              unchecking: true,
+              marking: false,
+              unmarking: true,
+            }}
+            buttons={[
+              {
+                id: "checking",
+                color: "blue",
+                onClick: () => {
+                  setActionState("checking");
+                },
+                label: <i className="fa-solid fa-marker"></i>,
+              },
+              {
+                id: "marking",
+                color: "red",
+                onClick: () => {
+                  setActionState("marking");
+                },
+                label: <i className="fa-solid fa-xmark"></i>,
+              },
+            ]}
+          />
         </div>
 
         <ButtonGroup
-          isActive={true}
+          isActive={false}
           multiActive={{
-            checking: false,
-            unchecking: true,
-            marking: false,
-            unmarking: true,
+            reset: false,
+            undo: false,
+            redo: false,
           }}
           buttons={[
             {
-              id: "checking",
+              id: "reset",
               color: "blue",
               onClick: () => {
-                setActionState("checking");
+                setModalState(true);
               },
-              label: <i className="fa-solid fa-marker"></i>,
+              disabled: (history.length <= 1 && historyIndex === 0) || won,
+              modal: {
+                title: "Reset grid",
+                message:
+                  "Are you sure you want to reset? This resets the grid and clears the history.",
+                firstOp: () => {
+                  resetGrid();
+                  setModalState(false);
+                },
+                secondOp: () => setModalState(false),
+                modalState: modalState,
+              },
+              label: <i className="fa-solid fa-rotate-left"></i>,
             },
             {
-              id: "marking",
-              color: "red",
+              id: "undo",
+              color: "blue",
               onClick: () => {
-                setActionState("marking");
+                undoMove();
               },
-              label: <i className="fa-solid fa-xmark"></i>,
+              disabled: historyIndex === 0 || won,
+              label: <i className="fa-solid fa-left-long"></i>,
+            },
+            {
+              id: "redo",
+              color: "blue",
+              onClick: () => {
+                redoMove();
+              },
+              disabled: historyIndex === history.length - 1 || won,
+              label: <i className="fa-solid fa-right-long"></i>,
             },
           ]}
         />
@@ -379,13 +398,16 @@ const Grid = ({ size, title, imagePath, winningGrid }) => {
             title="You Won!"
             image={imagePath}
             message={title}
-            onConfirm={() => {
+            firstOp={() => {
               setFadeOut(false);
               setWon(false);
               resetGrid();
+              getNewImage();
             }}
-            onCancel={() => {
+            secondOp={() => {
               // handle cancel action here if needed
+              // go to main menu
+              onGoBack();
             }}
           />
         </div>

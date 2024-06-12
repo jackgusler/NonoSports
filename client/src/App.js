@@ -21,7 +21,13 @@ function App() {
           />
         )}
         {gameStarted && (
-          <GameView categories={categories} difficulty={difficulty} />
+          <GameView
+            categories={categories}
+            difficulty={difficulty}
+            onGoBack={() => {
+              setGameStarted(false);
+            }}
+          />
         )}
       </div>
     </div>

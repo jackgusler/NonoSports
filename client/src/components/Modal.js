@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonGroup from "./ButtonGroup";
 
-const Modal = ({ title, image, message, onConfirm, onCancel }) => (
+const Modal = ({ title, image, message, firstOp, secondOp }) => (
   <div
     className="fixed z-10 inset-0 overflow-y-auto"
     aria-labelledby="modal-title"
@@ -62,32 +62,49 @@ const Modal = ({ title, image, message, onConfirm, onCancel }) => (
             backgroundColor: "#446BA2",
           }}
         >
-          <ButtonGroup
-            isActive={false}
-            multiActive={{
-              reset: false,
-              undo: false,
-              redo: false,
-            }}
-            buttons={[
-              {
-                id: "reset",
-                color: "blue",
-                onClick: () => {
-                  onConfirm();
+          {image ? (
+            <ButtonGroup
+              buttons={[
+                {
+                  id: "next",
+                  color: "blue",
+                  onClick: () => {
+                    firstOp();
+                  },
+                  label: "Next",
                 },
-                label: "Confirm",
-              },
-              {
-                id: "undo",
-                color: "grey",
-                onClick: () => {
-                  onCancel();
+                {
+                  id: "menu",
+                  color: "grey",
+                  onClick: () => {
+                    secondOp();
+                  },
+                  label: "Menu",
                 },
-                label: "Cancel",
-              },
-            ]}
-          />
+              ]}
+            />
+          ) : (
+            <ButtonGroup
+              buttons={[
+                {
+                  id: "confirm",
+                  color: "blue",
+                  onClick: () => {
+                    firstOp();
+                  },
+                  label: "Confirm",
+                },
+                {
+                  id: "cancel",
+                  color: "grey",
+                  onClick: () => {
+                    secondOp();
+                  },
+                  label: "Cancel",
+                },
+              ]}
+            />
+          )}
         </div>
       </div>
     </div>

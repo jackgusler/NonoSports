@@ -59,8 +59,8 @@ const Button = ({
         <Modal
           title={modal.title}
           message={modal.message}
-          onConfirm={modal.onConfirm}
-          onCancel={modal.onCancel}
+          firstOp={modal.firstOp}
+          secondOp={modal.secondOp}
         />
       )}
       <div
