@@ -28,12 +28,12 @@ const GridButton = ({
     let shadows = [];
 
     // Black border conditions
-    let topShadow = col % 3 === 0 ? "0px -1px 0px 0px black" : null;
+    let topShadow = col % 5 === 0 ? "0px -1px 0px 0px black" : null;
     let rightShadow =
-      row % 3 === 2 || row === maxRow - 1 ? "1px 0px 0px 0px black" : null;
+      row % 5 === 4 || row === maxRow - 1 ? "1px 0px 0px 0px black" : null;
     let bottomShadow =
-      col % 3 === 2 || col === maxCol - 1 ? "0px 1px 0px 0px black" : null;
-    let leftShadow = row % 3 === 0 ? "-1px 0px 0px 0px black" : null;
+      col % 5 === 4 || col === maxCol - 1 ? "0px 1px 0px 0px black" : null;
+    let leftShadow = row % 5 === 0 ? "-1px 0px 0px 0px black" : null;
 
     if (row === 0) {
       leftShadow = "-1px 1px 0px 1px black";
