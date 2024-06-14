@@ -4,9 +4,9 @@ import Grid from "../components/Grid";
 import Converter from "../components/Converter";
 
 const difficultyMap = {
-  easy: 15,
+  small: 15,
   medium: 20,
-  hard: 25,
+  large: 25,
 };
 
 const GameView = ({ categories, difficulty, onGoBack }) => {

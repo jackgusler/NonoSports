@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ButtonGroup from "./ButtonGroup";
 import GridButton from "./GridButton";
-import NumberRow from "./NumberRow";
+import TopNumbers from "./TopNumbers";
+import LeftNumbers from "./LeftNumbers";
 import Modal from "./Modal";
 
 const Grid = ({
@@ -213,6 +214,7 @@ const Grid = ({
           flexDirection: "column",
           justifyContent: "space-between",
           height: "90vh",
+          alignItems: "center",
         }}
       >
         <ButtonGroup
@@ -227,15 +229,33 @@ const Grid = ({
           ]}
         />
 
-        <div style={{ position: "relative" }}>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+        >
           <div
             className="grid my-4 mb-8"
             style={{
-              gridTemplateColumns: `repeat(${size[0]}, minmax(0, 1fr))`,
+              width: "fit-content",
+              gridTemplateColumns: `repeat(${size[0]}, minmax(0, 20px))`, // Change the column count to match the grid size
               position: "relative",
             }}
             onMouseLeave={handleMouseLeave}
           >
+            <TopNumbers
+              size={size}
+              rowNumbers={rowNumbers}
+              winningGrid={winningGrid}
+              userGrid={grid}
+            />
+            <LeftNumbers
+              size={size}
+              colNumbers={colNumbers}
+              winningGrid={winningGrid}
+              userGrid={grid}
+            />
             {Array.from({ length: size[0] }).map((_, rowIndex) => (
               <div key={rowIndex} className="grid-row">
                 {Array.from({ length: size[1] }).map((_, colIndex) => (
@@ -243,22 +263,6 @@ const Grid = ({
                     key={`${resetKey}-${rowIndex}-${colIndex}`}
                     className="grid-cell"
                   >
-                    {rowIndex === 0 && (
-                      <NumberRow
-                        orientation="left"
-                        numbers={colNumbers[colIndex]}
-                        winningGrid={winningGrid}
-                        userGrid={grid}
-                      />
-                    )}
-                    {colIndex === 0 && (
-                      <NumberRow
-                        orientation="top"
-                        numbers={rowNumbers[rowIndex]}
-                        winningGrid={winningGrid}
-                        userGrid={grid}
-                      />
-                    )}
                     <GridButton
                       onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                       onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
@@ -405,8 +409,6 @@ const Grid = ({
               getNewImage();
             }}
             secondOp={() => {
-              // handle cancel action here if needed
-              // go to main menu
               onGoBack();
             }}
           />

@@ -57,18 +57,18 @@ function StartingView({ setCategories, setDifficulty, setGameStarted }) {
         <ButtonGroup
           isActive={true}
           multiActive={{
-            easy: false,
+            small: false,
             medium: false,
-            hard: false,
+            large: false,
           }}
           buttons={[
             {
-              id: "easy",
+              id: "small",
               color: "grey",
               onClick: () => {
-                setDifficulty("easy");
+                setDifficulty("small");
               },
-              label: "Easy",
+              label: "Small",
             },
             {
               id: "medium",
@@ -79,12 +79,12 @@ function StartingView({ setCategories, setDifficulty, setGameStarted }) {
               label: "Medium",
             },
             {
-              id: "hard",
+              id: "large",
               color: "grey",
               onClick: () => {
-                setDifficulty("hard");
+                setDifficulty("large");
               },
-              label: "Hard",
+              label: "Large",
             },
           ]}
         />

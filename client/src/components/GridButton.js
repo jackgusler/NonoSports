@@ -7,8 +7,6 @@ const GridButton = ({
   position,
   max,
 }) => {
-  let rightBorder = false;
-
   const getButtonColor = () => {
     switch (buttonState) {
       case 0:
@@ -55,18 +53,6 @@ const GridButton = ({
       topShadow = "0px 0px 0px 2px black";
     }
 
-    // if (row === 0 && col === maxCol - 1) {
-    //   bottomShadow = "0px 0px 0px 1px black";
-    // }
-
-    // if (row === maxRow - 1 && col === 0) {
-    //   rightBorder = true;
-    // }
-
-    // if (row === maxRow - 1 && col === maxCol - 1) {
-    //   rightBorder = true
-    // }
-
     if (
       !topShadow &&
       !rightShadow &&
@@ -103,8 +89,8 @@ const GridButton = ({
       onMouseOver={onMouseOver}
       style={{
         backgroundColor: getButtonColor(),
-        width: "25px",
-        height: "25px",
+        width: "20px",
+        height: "20px",
         boxShadow: getBoxShadow(),
         display: "flex",
         justifyContent: "center",
