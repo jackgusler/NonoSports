@@ -5,7 +5,7 @@ import StartingView from "./views/StartingView";
 import GameView from "./views/GameView";
 
 function App() {
-  const [difficulty, setDifficulty] = useState("easy");
+  const [difficulty, setDifficulty] = useState("small");
   const [categories, setCategories] = useState(["MLB"]); // Change to array
   const [gameStarted, setGameStarted] = useState(false);
 
