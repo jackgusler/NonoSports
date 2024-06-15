@@ -60,7 +60,7 @@ const Grid = ({
       .map((_, row) =>
         Array(size[1])
           .fill()
-          .map((_, col) => ({ row, col, state: 0 }))
+          .map((_, col) => ({ state: 0 }))
       );
 
   const [grid, setGrid] = useState(createEmptyGrid);
