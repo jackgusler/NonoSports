@@ -1,78 +1,321 @@
-// const isRowCompleted = (effectiveRowNumbers, userRow = []) => {
-//   // effectiveRowNumbers can look like [13] or [13, 5, 2] or [0] or [1, 5, 1, 7]
-//   // for each number in effectiveRowNumbers, check if the number is complete
-
-//   // a number is complete if the row, from left to right or right to left, to the numbers position, is filled with 1s or 2s
-//   // the amount of 1s should be equal to the number
-//   // for example, if effectiveRowNumbers is [3], and the row looks like this [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], the number is complete
-//   // if the row looks like this [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], the number is not complete
-//   // if the row looks like this [1, 1, 1, 2, 2, 2, 0, 0, 0, 0], the number is complete
-//   // if the row looks like this [1, 1, 1, 2, 2, 0, 0, 0, 0, 0], the number is complete
-//   // if the row looks like this [1, 1, 1, 0, 0, 0, 0, 1, 0, 0], the number is not complete
-
-//   // for example, if effectiveRowNumbers is [3, 2], and the row looks like this [1, 1, 1, 2, 2, 2, 0, 0, 0, 0], the numbers are not complete
-//   // if the row looks like this [1, 1, 1, 2, 2, 2, 1, 1, 0, 0], the numbers are complete
-//   // if the row looks like this [1, 1, 1, 2, 2, 0, 1, 1, 0, 0], the numbers are complete
-//   // if the row looks like this [1, 1, 1, 2, 2, 0, 0, 1, 0, 0], the numbers are not complete
-
-//   // for example, if effectiveRowNumbers is [0], and the row looks like this [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], the number is complete
-//   // if the row looks like this [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], the number is not complete
-//   // if the row looks like this [0, 0, 0, 0, 0, 2, 0, 0, 0, 0], the number is complete
-
-//   // for example, if effectiveRowNumbers is [1, 2, 3], and the row looks like this [1, 1, 1, 2, 2, 2, 1, 1, 1, 0], the numbers are not complete
-//   // if the row looks like this [1, 2, 2, 1, 1, 2, 1, 1, 1, 0], the numbers are complete
-//   // if the row looks like this [1, 2, 2, 1, 1, 2, 1, 1, 1, 1], the numbers are not complete
-//   // if the row looks like this [1, 2, 2, 1, 1, 2, 1, 1, 1, 2], the numbers are complete
-//   // if the row looks like this [1, 0, 0, 1, 1, 0, 1, 1, 1, 0], the numbers are complete
-
-//   // if all numbers are complete, return true, otherwise return false
-// };
-
 import React from "react";
 
-const LeftNumbers = ({ size, colNumbers, winningGrid, userGrid }) => {
+const LeftNumbers = ({ size, colNumbers, userGrid, fillEmptyCells }) => {
   const cellSize = 20;
   const maxRowHeight = Math.max(...colNumbers.map((row) => row.length));
 
   const getNumberCompletion = (effectiveRowNumbers, userRow = []) => {
-    if (effectiveRowNumbers.length === 1 && effectiveRowNumbers[0] === 0) {
-      return userRow.every(cell => cell.state !== 1) ? [true] : [false];
-    }
+    const completionStatus = new Array(effectiveRowNumbers.length).fill(false);
+    let usedCells = [];
 
-    let currentIndex = 0;
-    const numberCompletion = [];
-
-    for (let number of effectiveRowNumbers) {
+    const validateSingleNumber = (number) => {
       let count = 0;
+      let consecutiveCount = 0;
+      for (let i = 0; i < userRow.length; i++) {
+        if (userRow[i].state === 1) {
+          consecutiveCount++;
+          count++;
+        }
 
-      // Skip markers and count the filled cells
-      while (currentIndex < userRow.length && userRow[currentIndex].state !== 1) {
-        currentIndex++;
+        if (
+          consecutiveCount > 0 &&
+          consecutiveCount < number &&
+          userRow[i].state !== 1
+        ) {
+          consecutiveCount = 0;
+        }
       }
 
-      while (currentIndex < userRow.length && userRow[currentIndex].state === 1) {
-        count++;
-        currentIndex++;
+      if (consecutiveCount === number && count === number) {
+        completionStatus[0] = true;
+      } else {
+        completionStatus[0] = false;
+      }
+    };
+
+    const validateLeft = (number, index) => {
+      let consecutiveCount = 0;
+      let isValid = false;
+      let usedCellsHere = [];
+      for (let i = 0; i < userRow.length; i++) {
+        if (userRow[i].state === 0) {
+          isValid = false;
+          break;
+        }
+
+        if (userRow[i].state === 1) {
+          consecutiveCount++;
+          usedCellsHere.push(i);
+        }
+
+        if (
+          consecutiveCount > 0 &&
+          consecutiveCount < number &&
+          userRow[i].state !== 1
+        ) {
+          break;
+        }
+
+        if (
+          (consecutiveCount === number &&
+            userRow[i + 1] &&
+            userRow[i + 1].state !== 1) ||
+          (consecutiveCount === number && userRow[i + 1] === undefined)
+        ) {
+          isValid = true;
+          break;
+        }
       }
 
-      numberCompletion.push(count === number);
+      if (isValid) {
+        for (let i = 0; i < usedCellsHere.length; i++) {
+          if (usedCells.includes(usedCellsHere[i])) {
+            isValid = false;
+          } else {
+            usedCells.push(usedCellsHere[i]);
+          }
+        }
+      }
 
-      // Skip over the marker cells (state === 2)
-      while (currentIndex < userRow.length && userRow[currentIndex].state === 2) {
-        currentIndex++;
+      completionStatus[index] = isValid;
+    };
+
+    const validateRight = (number, index) => {
+      let consecutiveCount = 0;
+      let isValid = false;
+      let usedCellsHere = [];
+      for (let i = userRow.length - 1; i >= 0; i--) {
+        if (userRow[i].state === 0) {
+          isValid = false;
+          break;
+        }
+
+        if (userRow[i].state === 1) {
+          consecutiveCount++;
+          usedCellsHere.push(i);
+        }
+
+        if (
+          consecutiveCount > 0 &&
+          consecutiveCount < number &&
+          userRow[i].state !== 1
+        ) {
+          break;
+        }
+
+        if (
+          (consecutiveCount === number &&
+            userRow[i - 1] &&
+            userRow[i - 1].state !== 1) ||
+          (consecutiveCount === number && userRow[i - 1] === undefined)
+        ) {
+          isValid = true;
+          break;
+        }
+      }
+
+      if (isValid) {
+        for (let i = 0; i < usedCellsHere.length; i++) {
+          if (usedCells.includes(usedCellsHere[i])) {
+            isValid = false;
+          } else {
+            usedCells.push(usedCellsHere[i]);
+          }
+        }
+      }
+
+      completionStatus[index] = isValid;
+    };
+
+    const validateMiddle = (number, index, total) => {
+      let consecutiveCount = 0;
+      let usedCellsHere = [];
+      let onesCount = 0;
+      let inOnes = false;
+
+      const validateMiddleLeft = (number, index) => {
+        for (let i = 0; i < index; i++) {
+          if (!completionStatus[i]) {
+            return false;
+          }
+        }
+
+        consecutiveCount = 0;
+        usedCellsHere = [];
+        onesCount = 0;
+        inOnes = false;
+
+        for (let i = 0; i < userRow.length; i++) {
+          if (userRow[i].state === 0) {
+            return false;
+          }
+
+          if (userRow[i].state === 1) {
+            if (!inOnes) {
+              inOnes = true;
+              onesCount++;
+            }
+            if (onesCount > index) {
+              consecutiveCount++;
+              usedCellsHere.push(i);
+            }
+          } else {
+            inOnes = false;
+          }
+
+          if (
+            consecutiveCount > 0 &&
+            consecutiveCount < number &&
+            userRow[i].state !== 1
+          ) {
+            break;
+          }
+
+          if (
+            (consecutiveCount === number &&
+              userRow[i + 1] &&
+              userRow[i + 1].state !== 1) ||
+            (consecutiveCount === number && userRow[i + 1] === undefined)
+          ) {
+            return true;
+          }
+        }
+      };
+
+      const validateMiddleRight = (number, index, total) => {
+        consecutiveCount = 0;
+        usedCellsHere = [];
+        onesCount = 0;
+        inOnes = false;
+
+        for (let i = userRow.length - 1; i >= 0; i--) {
+          if (userRow[i].state === 0) {
+            return false;
+          }
+
+          if (userRow[i].state === 1) {
+            if (!inOnes) {
+              inOnes = true;
+              onesCount++;
+            }
+            if (onesCount > total - index - 1) {
+              consecutiveCount++;
+              usedCellsHere.push(i);
+            }
+          } else {
+            inOnes = false;
+          }
+
+          if (
+            consecutiveCount > 0 &&
+            consecutiveCount < number &&
+            userRow[i].state !== 1
+          ) {
+            break;
+          }
+
+          if (
+            (consecutiveCount === number &&
+              userRow[i - 1] &&
+              userRow[i - 1].state !== 1) ||
+            (consecutiveCount === number && userRow[i - 1] === undefined)
+          ) {
+            return true;
+          }
+        }
+      };
+
+      let isValid = false;
+      isValid = validateMiddleLeft(number, index);
+      if (!isValid) {
+        isValid = validateMiddleRight(number, index, total);
+      }
+
+      if (isValid) {
+        for (let i = 0; i < usedCellsHere.length; i++) {
+          if (usedCells.includes(usedCellsHere[i])) {
+            isValid = false;
+          } else {
+            usedCells.push(usedCellsHere[i]);
+          }
+        }
+      }
+
+      completionStatus[index] = isValid;
+    };
+
+    if (effectiveRowNumbers.length === 1) {
+      validateSingleNumber(effectiveRowNumbers[0]);
+    } else if (effectiveRowNumbers.length > 1) {
+      validateLeft(effectiveRowNumbers[0], 0);
+      validateRight(
+        effectiveRowNumbers[effectiveRowNumbers.length - 1],
+        effectiveRowNumbers.length - 1
+      );
+      for (let i = 1; i < effectiveRowNumbers.length - 1; i++) {
+        validateMiddle(effectiveRowNumbers[i], i, effectiveRowNumbers.length);
       }
     }
 
-    return numberCompletion;
+    return completionStatus;
   };
 
-  const isRowCompleted = (numberCompletion) => {
-    return numberCompletion.every(isCompleted => isCompleted);
+  const isRowCompleted = (effectiveRowNumbers, userRow) => {
+    const rowCheck = (effectiveRowNumbers, userRow) => {
+      let currentIndex = 0;
+      for (let number of effectiveRowNumbers) {
+        let count = 0;
+
+        while (
+          currentIndex < userRow.length &&
+          userRow[currentIndex].state !== 1
+        ) {
+          currentIndex++;
+        }
+
+        while (
+          currentIndex < userRow.length &&
+          userRow[currentIndex].state === 1
+        ) {
+          count++;
+          currentIndex++;
+        }
+
+        if (count !== number) {
+          return false;
+        }
+
+        while (
+          currentIndex < userRow.length &&
+          userRow[currentIndex].state === 2
+        ) {
+          currentIndex++;
+        }
+      }
+
+      while (currentIndex < userRow.length) {
+        if (userRow[currentIndex].state === 1) {
+          return false;
+        }
+        currentIndex++;
+      }
+
+      return true;
+    };
+
+    const numberCompletion = getNumberCompletion(effectiveRowNumbers, userRow);
+
+    const rowCompleted = rowCheck(effectiveRowNumbers, userRow);
+
+    return numberCompletion.every((isCompleted) => isCompleted) || rowCompleted;
   };
 
   function getRowFromTransposedGrid(grid, rowIndex) {
     return grid.map((column) => column[rowIndex]);
   }
+
+  // Assuming you have a state management setup at a higher level that can handle the update
+  // Add a new prop to LeftNumbers component for handling cell updates: onUpdateCell
 
   return (
     <div
@@ -90,12 +333,22 @@ const LeftNumbers = ({ size, colNumbers, winningGrid, userGrid }) => {
         const effectiveRowNumbers = rowNumbers.length === 0 ? [0] : rowNumbers;
         const emptyCellsCount = maxRowHeight - effectiveRowNumbers.length;
         const userRow = getRowFromTransposedGrid(userGrid, rowIndex);
-        const numberCompletion = getNumberCompletion(effectiveRowNumbers, userRow);
-        const rowCompleted = isRowCompleted(numberCompletion);
+        const numberCompletion = getNumberCompletion(
+          effectiveRowNumbers,
+          userRow
+        );
+        const rowCompleted = isRowCompleted(effectiveRowNumbers, userRow);
+
+        const handleDoubleClick = () => {
+          if (rowCompleted) {
+            fillEmptyCells(rowIndex, 2);
+          }
+        };
 
         return (
           <div
             key={rowIndex}
+            onDoubleClick={handleDoubleClick}
             style={{
               display: "grid",
               gridTemplateColumns: `repeat(${maxRowHeight}, ${cellSize}px)`,
@@ -133,7 +386,13 @@ const LeftNumbers = ({ size, colNumbers, winningGrid, userGrid }) => {
                     : rowIndex % 2 === 1
                     ? "#CCCCCC"
                     : "#BBBBBB",
-                  color: numberCompletion[numberIndex] ? (rowCompleted ? "white" : "#3B82F6") : (rowCompleted ? "white" : "black"),
+                  color: numberCompletion[numberIndex]
+                    ? rowCompleted
+                      ? "white"
+                      : "#3B82F6"
+                    : rowCompleted
+                    ? "white"
+                    : "black",
                 }}
               >
                 <span>
@@ -149,4 +408,3 @@ const LeftNumbers = ({ size, colNumbers, winningGrid, userGrid }) => {
 };
 
 export default LeftNumbers;
-

@@ -229,11 +229,12 @@ const Grid = ({
           ]}
         />
 
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
           <div
             className="grid my-4 mb-8"
@@ -247,14 +248,36 @@ const Grid = ({
             <TopNumbers
               size={size}
               rowNumbers={rowNumbers}
-              winningGrid={winningGrid}
               userGrid={grid}
+              fillEmptyCells={(rowIndex, state) => {
+                const newGrid = grid.map((row) =>
+                  row.map((cell) => ({ ...cell }))
+                );
+                for (let i = 0; i < size[1]; i++) {
+                  // Assuming size[0] is the width (number of columns)
+                  if (newGrid[rowIndex][i].state === 0) {
+                    newGrid[rowIndex][i].state = state;
+                  }
+                }
+                setGrid(newGrid);
+              }}
             />
             <LeftNumbers
               size={size}
               colNumbers={colNumbers}
-              winningGrid={winningGrid}
               userGrid={grid}
+              fillEmptyCells={(columnIndex, state) => {
+                const newGrid = grid.map((row) =>
+                  row.map((cell) => ({ ...cell }))
+                );
+                for (let i = 0; i < size[0]; i++) {
+                  // Assuming size[1] is the height (number of rows)
+                  if (newGrid[i][columnIndex].state === 0) {
+                    newGrid[i][columnIndex].state = state;
+                  }
+                }
+                setGrid(newGrid);
+              }}
             />
             {Array.from({ length: size[0] }).map((_, rowIndex) => (
               <div key={rowIndex} className="grid-row">
