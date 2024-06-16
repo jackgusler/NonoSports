@@ -395,8 +395,12 @@ const LeftNumbers = ({ size, colNumbers, userGrid, fillEmptyCells }) => {
                     : "black",
                 }}
               >
-                <span>
-                  {number !== null && number !== undefined ? number : "0"}
+                <span
+                  style={{
+                    userSelect: "none",
+                  }}
+                >
+                  {number}
                 </span>
               </div>
             ))}

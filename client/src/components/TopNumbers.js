@@ -404,7 +404,13 @@ const TopNumbers = ({ size, rowNumbers, userGrid, fillEmptyCells }) => {
                     : "black",
                 }}
               >
-                <span>{number}</span>
+                <span
+                  style={{
+                    userSelect: "none",
+                  }}
+                >
+                  {number}
+                </span>
               </div>
             ))}
           </div>
