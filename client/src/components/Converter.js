@@ -86,6 +86,9 @@ const Converter = ({ difficulty, categories, onEmitData }) => {
     imageString = imageString[imageString.length - 1];
     imageString = imageString.split(".")[0];
     imageString = imageString.replace("mlb-", "");
+    imageString = imageString.replace("nba-", "");
+    imageString = imageString.replace("nfl-", "");
+    imageString = imageString.replace("nhl-", "");
     let parts = imageString.split("-");
     for (let i = 0; i < parts.length - 1; i++) {
       if (isNaN(parts[i]) || isNaN(parts[i + 1])) {
