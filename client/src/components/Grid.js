@@ -200,9 +200,19 @@ const Grid = ({
   };
 
   useEffect(() => {
+    // First check
     if (didYouWin(grid, winningGrid)) {
-      setWon(true);
-      setFadeOut(true);
+      // Wait for half a second before the second check
+      const timer = setTimeout(() => {
+        // Second check
+        if (didYouWin(grid, winningGrid)) {
+          setWon(true);
+          setFadeOut(true);
+        }
+      }, 500); // 500 milliseconds = 0.5 seconds
+
+      // Cleanup the timer if the component unmounts or the dependencies change
+      return () => clearTimeout(timer);
     }
   }, [grid, winningGrid]);
 
@@ -434,6 +444,7 @@ const Grid = ({
             secondOp={() => {
               onGoBack();
             }}
+            canHide={true}
           />
         </div>
       )}

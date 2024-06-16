@@ -316,9 +316,7 @@ const TopNumbers = ({ size, rowNumbers, userGrid, fillEmptyCells }) => {
 
     const columnCompleted = columnCheck(effectiveColumnNumbers, userColumn);
 
-    return (
-      numberCompletion.every((isCompleted) => isCompleted) || columnCompleted
-    );
+    return columnCompleted;
   };
 
   return (

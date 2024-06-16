@@ -307,7 +307,7 @@ const LeftNumbers = ({ size, colNumbers, userGrid, fillEmptyCells }) => {
 
     const rowCompleted = rowCheck(effectiveRowNumbers, userRow);
 
-    return numberCompletion.every((isCompleted) => isCompleted) || rowCompleted;
+    return rowCompleted;
   };
 
   function getRowFromTransposedGrid(grid, rowIndex) {

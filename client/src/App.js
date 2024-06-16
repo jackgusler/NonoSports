@@ -1,12 +1,12 @@
 import "./index.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import StartingView from "./views/StartingView";
 import GameView from "./views/GameView";
 
 function App() {
   const [difficulty, setDifficulty] = useState("small");
-  const [categories, setCategories] = useState(["MLB"]); // Change to array
+  const [categories, setCategories] = useState(["MLB"]);
   const [gameStarted, setGameStarted] = useState(false);
 
   return (
