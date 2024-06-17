@@ -16,6 +16,7 @@ const Grid = ({
   // for testing, make winningGrid just 1x1
   // size = [1, 1];
   // winningGrid = [[1]];
+  // console.log(title);
   const calculateRowNumbers = (winningGrid) => {
     const rowNumbers = winningGrid.map((row) => {
       let numbers = [];
